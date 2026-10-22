@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>第三章单元测试（智慧树结构复刻）</title>
+<style>
+  body { font: 14px/1.7 "Microsoft YaHei", sans-serif; margin: 0; background: #f5f6fa; display: flex; gap: 20px; padding: 20px; }
+  .paper { flex: 1; background: #fff; border-radius: 8px; padding: 24px; }
+  /* 右侧答题卡（应被排除） */
+  .answerCard { width: 260px; background: #fff; border-radius: 8px; padding: 16px; height: fit-content; }
+  .answerCard_tit { font-weight: 700; margin: 10px 0 6px; }
+  .answerCard-list-box div div { font-size: 20px; }
+  .answerCard_list1 { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .answerCard_list1 li { width: 28px; height: 28px; border-radius: 50%; background: #e5e9f2; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .answerCard_list1 li.green { background: #2ecc71; color: #fff; }
+  /* 题块（与真实 DOM 类名一致） */
+  .examPaper_subject { border-bottom: 1px solid #eee; padding: 18px 0; }
+  .subject_num { font-weight: 700; margin-right: 8px; }
+  .subject_type { color: #e67e22; font-weight: 600; margin-right: 8px; }
+  .subject_describe { display: inline; }
+  .nodeLab { display: flex; align-items: center; gap: 8px; padding: 8px 0; cursor: pointer; }
+  .nodeLab input[type=radio] { display: none; }
+  .ABCase { font-weight: 700; width: 20px; }
+  .flagChecked { display: none; width: 16px; }
+  .nodeLab.checked .flagChecked { display: inline; }
+  .nodeLab.checked { color: #2ecc71; }
+</style>
+</head>
+<body>
+<div class="answerCard">
+  <div class="answerCard_tit">剩余时间</div>
+  <div class="answerCard-list-box countdown isOpen"><div><div>53天00时49分</div></div></div>
+  <h3 class="answerCard_tit percentage_tit clearfix"><span class="fl partTitle">完成率</span><em class="fr"><i>0</i>%</em></h3>
+  <h3 class="answerCard_tit clearfix active"><span class="fl partTitle">第1部分</span></h3>
+  <div class="answerCard-list-box isOpen">
+    <ul class="answerCard_list1 nano1">
+      <li class="green">1</li><li class="green">2</li><li class="green">3</li><li class="green">4</li>
+      <li class="white">5</li><li class="white">6</li><li class="white">7</li><li class="white">8</li>
+    </ul>
+  </div>
+</div>
+
+<div class="paper">
+  <h2>第三章单元测试</h2>
+
+  <!-- Q1 单选：真实结构（题干已渲染） -->
+  <div class="examPaper_subject mt20">
+    <div class="subject_stem clearfix">
+      <div class="subject_type_describe fl">
+        <div class="subject_num fl"><span>1.</span></div>
+        <div class="subject_type_annex"><span class="subject_type"><span>【单选题】</span> <span>(2分)</span></span></div>
+        <div class="subject_describe dynamic-fonts">情绪理论中「詹姆士-兰格理论」认为情绪的核心是什么？</div>
+      </div>
+    </div>
+    <div class="subject_node">
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><div class="fl ffff"><input type="radio" class="mr30" value="491950748" style="display:none;"><img class="flagChecked"></div>
+        <span class="mr10 ABCase">A.</span><div class="node_detail examquestions-answer fl"><p>生理唤醒</p></div></div>
+      </div>
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><div class="fl ffff"><input type="radio" class="mr30" value="491950726" style="display:none;"><img class="flagChecked"></div>
+        <span class="mr10 ABCase">B.</span><div class="node_detail examquestions-answer fl"><p>行为反应</p></div></div>
+      </div>
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><div class="fl ffff"><input type="radio" class="mr30" value="491950732" style="display:none;"><img class="flagChecked"></div>
+        <span class="mr10 ABCase">C.</span><div class="node_detail examquestions-answer fl"><p>主观认知评价</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 多选：真实结构 -->
+  <div class="examPaper_subject mt20">
+    <div class="subject_stem clearfix">
+      <div class="subject_type_describe fl">
+        <div class="subject_num fl"><span>2.</span></div>
+        <div class="subject_type_annex"><span class="subject_type"><span>【多选题】</span> <span>(3分)</span></span></div>
+        <div class="subject_describe dynamic-fonts">以下属于情绪的基本形式的有（  ）。</div>
+      </div>
+    </div>
+    <div class="subject_node">
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><div class="fl ffff"><input type="checkbox" class="mr30" value="a1" style="display:none;"><img class="flagChecked"></div>
+        <span class="mr10 ABCase">A.</span><div class="node_detail examquestions-answer fl"><p>快乐</p></div></div>
+      </div>
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><div class="fl ffff"><input type="checkbox" class="mr30" value="a2" style="display:none;"><img class="flagChecked"></div>
+        <span class="mr10 ABCase">B.</span><div class="node_detail examquestions-answer fl"><p>恐惧</p></div></div>
+      </div>
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><div class="fl ffff"><input type="checkbox" class="mr30" value="a3" style="display:none;"><img class="flagChecked"></div>
+        <span class="mr10 ABCase">C.</span><div class="node_detail examquestions-answer fl"><p>悲伤</p></div></div>
+      </div>
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><div class="fl ffff"><input type="checkbox" class="mr30" value="a4" style="display:none;"><img class="flagChecked"></div>
+        <span class="mr10 ABCase">D.</span><div class="node_detail examquestions-answer fl"><p>愤怒</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 判断：真实结构 -->
+  <div class="examPaper_subject mt20">
+    <div class="subject_stem clearfix">
+      <div class="subject_type_describe fl">
+        <div class="subject_num fl"><span>3.</span></div>
+        <div class="subject_type_annex"><span class="subject_type"><span>【判断题】</span> <span>(2分)</span></span></div>
+        <div class="subject_describe dynamic-fonts">心理健康就是没有任何心理困扰。</div>
+      </div>
+    </div>
+    <div class="subject_node">
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><span class="mr10 ABCase">A.</span><div class="node_detail examquestions-answer fl"><p>正确</p></div></div>
+      </div>
+      <div class="nodeLab nodeLab12">
+        <div class="label clearfix"><span class="mr10 ABCase">B.</span><div class="node_detail examquestions-answer fl"><p>错误</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>window.__zsReady = true;</script>
+</body>
+</html>

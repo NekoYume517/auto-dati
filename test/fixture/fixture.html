@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>AutoDati · 检测引擎自测 Fixture</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    font: 14px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    margin: 0; padding: 16px 20px 60px; background: #f6f7fb; color: #1f2330;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .hint { color: #6b7280; font-size: 12px; margin-bottom: 14px; }
+  form { max-width: 880px; }
+  .question, .questionLi, .question-item, .subject_node, .exam-item, .questionItem, .field {
+    background: #fff; border: 1px solid #e4e7ef; border-radius: 10px;
+    padding: 12px 14px; margin: 0 0 12px;
+  }
+  .q-title, .stem, .Zy_TItle, .subject_describe, .q_title, .question-title, .field-label {
+    font-weight: 600; margin-bottom: 8px; display: block;
+  }
+  .q-options, .options, .Zy_ulTop, .nodeLab, .option-list, .q_options, .ui-controlgroup, .q-inputs {
+    display: block; margin: 0; padding: 0; list-style: none;
+  }
+  .q-options label, .options label, .Zy_ulTop li, .nodeLab li, .option-list > div, .q_options > div, .ui-controlgroup > div {
+    display: block; padding: 5px 8px; border-radius: 6px; cursor: pointer; margin-bottom: 4px;
+  }
+  .ui-controlgroup > div, .nodeLab li, .q_options > div, .option-list > div { border: 1px solid #e4e7ef; }
+  .selected { background: #eef2ff; border-color: #6366f1 !important; }
+  textarea { width: 100%; min-height: 64px; font: inherit; padding: 8px; border: 1px solid #d5d9e6; border-radius: 8px; }
+  .answer-editor { min-height: 56px; padding: 8px; border: 1px dashed #c9cee0; border-radius: 8px; }
+  .answer-editor:focus { outline: 2px solid #6366f1; }
+  input[type="text"], select { padding: 6px 8px; border: 1px solid #d5d9e6; border-radius: 8px; font: inherit; margin-right: 6px; }
+  #hidden-question { display: none; }
+  nav.topbar { background: #e9ecf5; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; }
+  nav.topbar label { display: inline-block; margin-right: 12px; }
+  #dati-overlay-host { border: 1px dashed #f59e0b; padding: 8px; border-radius: 8px; margin-bottom: 12px; }
+  #shadow-host { border: 1px dashed #10b981; padding: 8px; border-radius: 8px; margin-bottom: 12px; }
+  #report {
+    margin-top: 18px; background: #0f1220; color: #d7dbe8; padding: 14px 16px;
+    border-radius: 10px; font: 12px/1.7 ui-monospace, Consolas, monospace; white-space: pre-wrap;
+    max-width: 880px; overflow-x: auto;
+  }
+  #report .p { color: #34d399; }
+  #report .f { color: #f87171; }
+  #report .s { color: #fbbf24; font-weight: 700; }
+  .spacer { height: 2400px; background: linear-gradient(#fff, #eef); border-radius: 8px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<h1>AutoDati 检测引擎自测</h1>
+<div class="hint">覆盖：radio/label、伪选项、判断题、多选、多空填空、textarea、contenteditable、select、隐藏题、已答题、[data-dati-ignore]、导航噪声、Shadow DOM、站点式结构。</div>
+
+<nav class="topbar" id="noise-nav">
+  <span>导航噪声：</span>
+  <label><input type="radio" name="navfake" value="1"> 首页</label>
+  <label><input type="radio" name="navfake" value="2"> 题库</label>
+  <label><input type="radio" name="navfake" value="3"> 我的</label>
+</nav>
+
+<div id="dati-overlay-host">
+  <div class="question" id="ignored-q">
+    <div class="q-title">被覆盖层标记忽略的题目（不应被检测）</div>
+    <div class="q-options">
+      <label><input type="radio" name="ignored" value="A"> A. 忽略项一</label>
+      <label><input type="radio" name="ignored" value="B"> B. 忽略项二</label>
+    </div>
+  </div>
+</div>
+
+<div id="shadow-host"></div>
+
+<form id="paper" autocomplete="off">
+
+  <!-- 1. 学习通式：radio + label 包裹 + 选项字母前缀 + 题干编号 -->
+  <div class="questionLi" id="q1">
+    <div class="TiMu"><span class="Zy_TItle">1. 下列哪个 HTTP 状态码表示「未找到」？</span></div>
+    <ul class="Zy_ulTop">
+      <li><label><input type="radio" name="q1" value="A"><span>A. 200 OK</span></label></li>
+      <li><label><input type="radio" name="q1" value="B"><span>B. 404 Not Found</span></label></li>
+      <li><label><input type="radio" name="q1" value="C"><span>C. 500 Internal Server Error</span></label></li>
+      <li><label><input type="radio" name="q1" value="D"><span>D. 302 Found</span></label></li>
+    </ul>
+  </div>
+
+  <!-- 2. 已答题（radio checked） -->
+  <div class="question-item" id="q2">
+    <p class="stem">2、以下哪个不是 JavaScript 的原始类型？</p>
+    <div class="options">
+      <label><input type="radio" name="q2" value="A" checked> A、string</label>
+      <label><input type="radio" name="q2" value="B"> B、object</label>
+      <label><input type="radio" name="q2" value="C"> C、number</label>
+      <label><input type="radio" name="q2" value="D"> D、boolean</label>
+    </div>
+  </div>
+
+  <!-- 3. 隐藏题（display:none）——不应被检测 -->
+  <div class="question" id="q3" style="display:none">
+    <div class="q-title">3. 隐藏题目：这道题不可见，不应被检测到。</div>
+    <div class="q-options">
+      <label><input type="radio" name="q3" value="A"> A. 隐藏一</label>
+      <label><input type="radio" name="q3" value="B"> B. 隐藏二</label>
+    </div>
+  </div>
+
+  <!-- 4. 问卷星式：div 伪选项 -->
+  <div class="field" id="q4">
+    <div class="field-label">3. 您通常使用哪种浏览器？（单选）</div>
+    <div class="ui-controlgroup">
+      <div class="ui-radio"><span class="ui-radio-label">Chrome</span></div>
+      <div class="ui-radio"><span class="ui-radio-label">Firefox</span></div>
+      <div class="ui-radio"><span class="ui-radio-label">Safari</span></div>
+      <div class="ui-radio"><span class="ui-radio-label">Edge</span></div>
+    </div>
+  </div>
+
+  <!-- 5. 判断题 -->
+  <div class="question" id="q5">
+    <div class="q-title">4. 判断：HTTP 是无状态协议。</div>
+    <div class="q-options">
+      <label><input type="radio" name="q5" value="T"> 正确</label>
+      <label><input type="radio" name="q5" value="F"> 错误</label>
+    </div>
+  </div>
+
+  <!-- 6. 多选题 -->
+  <div class="question" id="q6">
+    <div class="q-title">5. 多选：以下哪些属于 HTTP 请求方法？</div>
+    <div class="q-options">
+      <label><input type="checkbox" name="q6" value="A"> A. GET</label>
+      <label><input type="checkbox" name="q6" value="B"> B. POST</label>
+      <label><input type="checkbox" name="q6" value="C"> C. SEND</label>
+      <label><input type="checkbox" name="q6" value="D"> D. PATCH</label>
+    </div>
+  </div>
+
+  <!-- 7. 多空填空 -->
+  <div class="question blank-item" id="q7">
+    <div class="q-title">6. 填空题：TCP 三次握手的第一步是客户端发送 ______ 报文，第二步服务端回复 ______。</div>
+    <div class="q-inputs">
+      <input type="text" name="q7_1" placeholder="第一空">
+      <input type="text" name="q7_2" placeholder="第二空">
+    </div>
+  </div>
+
+  <!-- 8. textarea 大题 -->
+  <div class="question qa-item" id="q8">
+    <div class="q-title">7. 简答题：请简述 HTTPS 的加密流程。</div>
+    <textarea name="q8" rows="4" placeholder="请输入答案"></textarea>
+  </div>
+
+  <!-- 9. contenteditable 大题 -->
+  <div class="question qa-item" id="q9">
+    <div class="q-title">8. 论述题：谈谈你对前端性能优化的理解。</div>
+    <div class="answer-editor" contenteditable="true" data-placeholder="请作答"></div>
+  </div>
+
+  <!-- 10. 下拉题 -->
+  <div class="question select-item" id="q10">
+    <div class="q-title">9. 请选择 SQL 中用于去重的关键字。</div>
+    <select name="q10">
+      <option value="">请选择</option>
+      <option value="1">DISTINCT</option>
+      <option value="2">GROUP</option>
+      <option value="3">UNIQUE</option>
+    </select>
+  </div>
+
+  <!-- 11. 智慧树式伪选项 -->
+  <div class="subject_node" id="q11">
+    <div class="subject_describe">单选题 10. 在 CSS 中，下列哪个属性用于设置元素的外边距？</div>
+    <ul class="nodeLab">
+      <li class="optionItem"><span>A、margin</span></li>
+      <li class="optionItem"><span>B、padding</span></li>
+      <li class="optionItem"><span>C、border</span></li>
+      <li class="optionItem"><span>D、outline</span></li>
+    </ul>
+  </div>
+
+  <!-- 12. 雨课堂式：label 与文本分离的多选 -->
+  <div class="questionItem" id="q12">
+    <div class="question-title">11. 【多选】以下哪些是 HTTP 缓存相关的响应头？</div>
+    <div class="option-list">
+      <div class="option-item"><span class="option-label">A</span><span class="option-text">Cache-Control</span></div>
+      <div class="option-item"><span class="option-label">B</span><span class="option-text">ETag</span></div>
+      <div class="option-item"><span class="option-label">C</span><span class="option-text">Set-Cookie</span></div>
+    </div>
+  </div>
+
+  <!-- 13. 考试宝式 -->
+  <div class="exam-item" id="q13">
+    <div class="q_title">12. 以下哪个不是 TCP 拥塞控制算法？</div>
+    <div class="q_options">
+      <div class="q_option">A. 慢启动</div>
+      <div class="q_option">B. 快速重传</div>
+      <div class="q_option">C. 滑动窗口</div>
+      <div class="q_option">D. 拥塞避免</div>
+    </div>
+  </div>
+
+  <!-- 动态插入区（observe 测试用） -->
+  <div id="dynamic-area"></div>
+
+</form>
+
+<!-- 回归用例 A：Lead 报告的最小 textarea 题块（通用自动识别曾把 textarea 过滤掉） -->
+<div class="q" id="qMinimalQA">
+  <div class="stem">15. 简答题：请简述光合作用的过程。</div>
+  <textarea></textarea>
+</div>
+
+<!-- 回归用例 B：textarea 已有内容 → answered 必须为 true -->
+<div class="question" id="qTAAnswered">
+  <div class="q-title">16. 简答题：请说明 TCP 与 UDP 的区别。</div>
+  <textarea>TCP 面向连接、可靠；UDP 无连接、不可靠。</textarea>
+</div>
+
+<!-- 回归用例 C：位于视口下方、需要滚动才可见的题目 -->
+<div class="spacer" id="vp-spacer"></div>
+<div class="question" id="qBelow">
+  <div class="q-title">17. 单选：以下哪个是视口下方的题？</div>
+  <div class="q-options">
+    <label><input type="radio" name="qBelow" value="A"> A. 需要滚动才可见</label>
+    <label><input type="radio" name="qBelow" value="B"> B. 一开始就可见</label>
+  </div>
+</div>
+
+<div id="report">running…</div>
+
+<script src="../../extension/common/protocol.js"></script>
+<script src="../../extension/common/settings.js"></script>
+<script src="../../extension/content/presets.js"></script>
+<script src="../../extension/content/detector.js"></script>
+<script src="../../extension/content/filler.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var AD = globalThis.AD;
+  var lines = [];
+  var pass = 0;
+  var fail = 0;
+  var reportEl = document.getElementById('report');
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function ok(cond, name, extra) {
+    if (cond) { pass++; lines.push('PASS  ' + name); }
+    else { fail++; lines.push('FAIL  ' + name + (extra ? '   → ' + extra : '')); }
+  }
+
+  function eq(actual, expected, name) {
+    var a = JSON.stringify(actual);
+    var e = JSON.stringify(expected);
+    ok(a === e, name, 'got ' + a + '  want ' + e);
+  }
+
+  function flush(status) {
+    var head = 'AD.SELFTEST ' + status + ' | pass=' + pass + ' fail=' + fail + ' total=' + (pass + fail);
+    var html = '<span class="s">' + esc(head) + '</span>\n';
+    html += lines.map(function (l) {
+      var cls = l.indexOf('PASS') === 0 ? 'p' : (l.indexOf('FAIL') === 0 ? 'f' : '');
+      return cls ? '<span class="' + cls + '">' + esc(l) + '</span>' : esc(l);
+    }).join('\n');
+    reportEl.innerHTML = html;
+    document.body.setAttribute('data-selftest', status);
+    document.body.setAttribute('data-selftest-pass', String(pass));
+    document.body.setAttribute('data-selftest-fail', String(fail));
+    try {
+      console.log(head);
+      console.log(lines.join('\n'));
+    } catch (e) { /* noop */ }
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* 0. 环境准备                                                       */
+  /* ---------------------------------------------------------------- */
+
+  var submitted = false;
+  var form = document.getElementById('paper');
+  form.addEventListener('submit', function (e) {
+    submitted = true;
+    e.preventDefault();
+  });
+
+  // 伪选项的点击态（模拟真实站点的 class 切换）
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var opt = t.closest('.ui-radio, .optionItem, .q_option');
+    if (!opt) return;
+    var box = opt.parentElement;
+    if (!box) return;
+    var kids = Array.prototype.slice.call(box.children);
+    for (var i = 0; i < kids.length; i++) {
+      if (kids[i] === opt) continue;
+      kids[i].classList.remove('selected');
+      kids[i].setAttribute('aria-checked', 'false');
+    }
+    opt.classList.add('selected');
+    opt.setAttribute('aria-checked', 'true');
+  });
+
+  // Shadow DOM 题目
+  var host = document.getElementById('shadow-host');
+  var sr = host.attachShadow({ mode: 'open' });
+  sr.innerHTML =
+    '<div class="question" id="q15">' +
+      '<div class="q-title">13. 影子树中的题目：以下哪个是 DOM 标准事件？</div>' +
+      '<div class="q-options">' +
+        '<label><input type="radio" name="q15" value="A"> A. click</label>' +
+        '<label><input type="radio" name="q15" value="B"> B. tap</label>' +
+        '<label><input type="radio" name="q15" value="C"> C. hover</label>' +
+      '</div>' +
+    '</div>';
+
+  // 设置快照：关掉视口限制、放开数量、加快去抖（无 chrome.* 时 save 直接写缓存）
+  var FIXTURE_RULES = [
+    { id: 'fixture-choice', enabled: true, kind: 'choice', rootSelector: '#q1,#q2,#q4,#q11,#q13,#q15,#qBelow,#q14', stemSelector: '.q-title,.stem', optionSelector: 'label' },
+    { id: 'fixture-multi', enabled: true, kind: 'multi', rootSelector: '#q6,#q12', stemSelector: '.q-title,.stem', optionSelector: 'label' },
+    { id: 'fixture-judge', enabled: true, kind: 'judge', rootSelector: '#q5', stemSelector: '.q-title,.stem', optionSelector: 'label' },
+    { id: 'fixture-blank', enabled: true, kind: 'blank', rootSelector: '#q7,#q10', stemSelector: '.q-title,.stem', inputSelector: 'input,select' },
+    { id: 'fixture-qa', enabled: true, kind: 'qa', rootSelector: '#q8,#q9,#qMinimalQA,#qTAAnswered', stemSelector: '.q-title,.stem', inputSelector: 'textarea,[contenteditable=true]' }
+  ];
+  AD.Settings.save({ detect: { customRules: FIXTURE_RULES } });
+  var SCAN = { viewportOnly: false, skipAnswered: false, maxPerPage: 50, shadowDom: true };
+
+  try {
+    AD.Settings.save({
+      mode: { scanDebounceMs: 120, minIntervalMs: 100, maxPerPage: 50, skipAnswered: false },
+      detect: { viewportOnly: false }
+    });
+  } catch (e) { /* noop */ }
+
+  var qs = [];
+  try {
+    qs = AD.Detector.scan(document, SCAN);
+  } catch (e) {
+    ok(false, 'Detector.scan 未抛异常', e && e.message);
+    flush('fail');
+    return;
+  }
+
+  function byId(id) {
+    for (var i = 0; i < qs.length; i++) {
+      if (qs[i].root && qs[i].root.id === id) return qs[i];
+    }
+    return null;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* 1. 检测：数量 / 顺序 / 去重                                       */
+  /* ---------------------------------------------------------------- */
+
+  // 文档顺序：Shadow host（#shadow-host）在 <form> 之前，故其内部题目排在最前；
+  // 视口下方的 qBelow 在页面末尾（viewportOnly=false 时才应出现）。
+  var EXPECTED_IDS = ['q15', 'q1', 'q2', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11', 'q12', 'q13',
+    'qMinimalQA', 'qTAAnswered', 'qBelow'];
+  var gotIds = qs.map(function (q) { return q.root && q.root.id; });
+
+  eq(gotIds, EXPECTED_IDS, '检测到的题目按文档顺序且完全符合预期（16 题）');
+
+  var idSet = {};
+  var dup = 0;
+  qs.forEach(function (q) { if (idSet[q.id]) dup++; idSet[q.id] = 1; });
+  eq(dup, 0, '题目 id 无重复');
+
+  var rootSet = new Set();
+  var rootDup = 0;
+  qs.forEach(function (q) {
+    if (rootSet.has(q.root)) rootDup++;
+    rootSet.add(q.root);
+  });
+  eq(rootDup, 0, '题目 root 无重复（同 root 已按置信度去重）');
+
+  var badConf = qs.filter(function (q) { return !(q.confidence > 0 && q.confidence <= 1); });
+  eq(badConf.length, 0, '所有题目 confidence ∈ (0,1]');
+
+  var allHaveStem = qs.every(function (q) { return q.stem && q.stem.length > 0; });
+  ok(allHaveStem, '所有题目都有非空 stem');
+
+  var allHaveRect = qs.every(function (q) { return q.rect && typeof q.rect.w === 'number' && q.rect.w > 0; });
+  ok(allHaveRect, '所有题目都有有效 rect（宽 > 0）');
+
+  /* ---------------------------------------------------------------- */
+  /* 2. 各 kind 的结构断言                                             */
+  /* ---------------------------------------------------------------- */
+
+  var q1 = byId('q1');
+  var q2 = byId('q2');
+  var q4 = byId('q4');
+  var q5 = byId('q5');
+  var q6 = byId('q6');
+  var q7 = byId('q7');
+  var q8 = byId('q8');
+  var q9 = byId('q9');
+  var q10 = byId('q10');
+  var q11 = byId('q11');
+  var q12 = byId('q12');
+  var q13 = byId('q13');
+
+  ok(!!q1, 'q1 被检测到（学习通式 radio + label）');
+  if (q1) {
+    eq(q1.kind, 'choice', 'q1 kind = choice');
+    eq(q1.options.length, 4, 'q1 选项数 = 4');
+    eq(q1.options.map(function (o) { return o.label; }), ['A', 'B', 'C', 'D'], 'q1 选项字母 = A/B/C/D');
+    eq(q1.options[1].text, '404 Not Found', 'q1 选项文本剥掉了「B. 」前缀');
+    ok(q1.stem.indexOf('HTTP') >= 0, 'q1 题干含题目内容');
+    ok(q1.stem.indexOf('404 Not Found') < 0, 'q1 题干未混入选项文本');
+    ok(q1.stem.indexOf('1. ') !== 0 && q1.stem.indexOf('1.') !== 0, 'q1 题干剥掉了题号「1.」');
+    eq(q1.answered, false, 'q1 未作答');
+    ok(!!q1.options[0].input && q1.options[0].input.type === 'radio', 'q1 选项挂到了 radio input');
+    eq(q1.presetId, 'custom:fixture-choice', 'q1 使用显式自定义规则');
+  }
+
+  ok(!!q2, 'q2 被检测到（已答题）');
+  if (q2) {
+    eq(q2.kind, 'choice', 'q2 kind = choice');
+    eq(q2.answered, true, 'q2 answered = true（radio 已选中）');
+    eq(q2.options[0].checked, true, 'q2 首项 checked = true');
+    eq(q2.options[1].text, 'object', 'q2 选项文本剥掉了「B、」前缀');
+  }
+
+  ok(!!q4, 'q4 被检测到（问卷星式 div 伪选项）');
+  if (q4) {
+    eq(q4.kind, 'choice', 'q4 kind = choice');
+    eq(q4.options.length, 4, 'q4 选项数 = 4');
+    eq(q4.options.map(function (o) { return o.text; }), ['Chrome', 'Firefox', 'Safari', 'Edge'], 'q4 伪选项文本正确');
+    ok(q4.options.every(function (o) { return o.input === null; }), 'q4 伪选项 input 为 null');
+    ok(q4.stem.indexOf('浏览器') >= 0, 'q4 题干正确向上归并到 .field');
+    ok(q4.stem.indexOf('Chrome') < 0, 'q4 题干未混入伪选项文本');
+  }
+
+  ok(!!q5, 'q5 被检测到（判断题）');
+  if (q5) {
+    eq(q5.kind, 'judge', 'q5 kind = judge');
+    eq(q5.options.length, 2, 'q5 选项数 = 2');
+    eq(q5.options.map(function (o) { return o.text; }), ['正确', '错误'], 'q5 选项文本 = 正确/错误');
+  }
+
+  ok(!!q6, 'q6 被检测到（多选题）');
+  if (q6) {
+    eq(q6.kind, 'multi', 'q6 kind = multi');
+    eq(q6.options.length, 4, 'q6 选项数 = 4');
+    ok(q6.options.every(function (o) { return o.input && o.input.type === 'checkbox'; }), 'q6 选项挂到了 checkbox');
+  }
+
+  ok(!!q7, 'q7 被检测到（多空填空）');
+  if (q7) {
+    eq(q7.kind, 'blank', 'q7 kind = blank');
+    eq(q7.inputs.length, 2, 'q7 空数 = 2');
+    eq(q7.inputs.map(function (i) { return i.type; }), ['text', 'text'], 'q7 输入类型 = text/text');
+    eq(q7.answered, false, 'q7 未作答');
+  }
+
+  ok(!!q8, 'q8 被检测到（textarea 大题）');
+  if (q8) {
+    eq(q8.kind, 'qa', 'q8 kind = qa');
+    eq(q8.inputs.length, 1, 'q8 输入数 = 1');
+    eq(q8.inputs[0].type, 'textarea', 'q8 输入类型 = textarea');
+  }
+
+  ok(!!q9, 'q9 被检测到（contenteditable 大题）');
+  if (q9) {
+    eq(q9.kind, 'qa', 'q9 kind = qa');
+    eq(q9.inputs[0].type, 'contenteditable', 'q9 输入类型 = contenteditable');
+  }
+
+  ok(!!q10, 'q10 被检测到（下拉题）');
+  if (q10) {
+    eq(q10.kind, 'blank', 'q10 kind = blank');
+    eq(q10.inputs[0].type, 'select', 'q10 输入类型 = select');
+    eq(q10.options.length, 3, 'q10 下拉选项数 = 3（已跳过「请选择」占位项）');
+    eq(q10.options.map(function (o) { return o.text; }), ['DISTINCT', 'GROUP', 'UNIQUE'], 'q10 下拉选项文本正确');
+  }
+
+  ok(!!q11, 'q11 被检测到（智慧树式）');
+  if (q11) {
+    eq(q11.kind, 'choice', 'q11 kind = choice');
+    eq(q11.options.length, 4, 'q11 选项数 = 4');
+    eq(q11.options.map(function (o) { return o.text; }), ['margin', 'padding', 'border', 'outline'], 'q11 选项文本剥掉了「A、」前缀');
+    ok(q11.stem.indexOf('CSS') >= 0, 'q11 题干正确');
+    ok(!/^单选题/.test(q11.stem), 'q11 题干剥掉了「单选题」类型前缀');
+  }
+
+  ok(!!q12, 'q12 被检测到（雨课堂式 label/text 分离）');
+  if (q12) {
+    eq(q12.kind, 'multi', 'q12 kind = multi（题干含「【多选】」）');
+    eq(q12.options.length, 3, 'q12 选项数 = 3');
+    eq(q12.options.map(function (o) { return o.text; }), ['Cache-Control', 'ETag', 'Set-Cookie'], 'q12 选项文本按文本节点分隔提取');
+  }
+
+  ok(!!q13, 'q13 被检测到（考试宝式）');
+  if (q13) {
+    eq(q13.kind, 'choice', 'q13 kind = choice');
+    eq(q13.options.length, 4, 'q13 选项数 = 4');
+    eq(q13.options.map(function (o) { return o.text; }), ['慢启动', '快速重传', '滑动窗口', '拥塞避免'], 'q13 选项文本剥掉了「A. 」前缀');
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* 3. 过滤：隐藏 / 忽略 / 导航噪声 / Shadow DOM                       */
+  /* ---------------------------------------------------------------- */
+
+  ok(!byId('q3'), '隐藏题（display:none）未被检测');
+  ok(!byId('ignored-q'), '[data-dati-ignore] 容器内的题目未被检测');
+  var navHit = qs.filter(function (q) {
+    return q.root && q.root.closest && q.root.closest('nav');
+  });
+  eq(navHit.length, 0, '导航区噪声未被检测');
+  ok(!!byId('q15'), 'Shadow DOM（open）内的题目被检测到');
+
+  var noShadow = AD.Detector.scan(document, Object.assign({}, SCAN, { shadowDom: false }));
+  eq(noShadow.length, 15, 'shadowDom=false 时少 1 题（共 15 题）');
+
+  /* ---------------------------------------------------------------- */
+  /* 3.1 回归：Lead 报告的 问答规则 textarea 回归                        */
+  /* ---------------------------------------------------------------- */
+
+  var qaHits = AD.Detector.scan(document, SCAN).filter(function (q) { return q.kind === 'qa'; });
+  var qaMinimal = null;
+  for (var qi = 0; qi < qaHits.length; qi++) {
+    if (qaHits[qi].root && qaHits[qi].root.id === 'qMinimalQA') { qaMinimal = qaHits[qi]; break; }
+  }
+  ok(!!qaMinimal, '自定义规则能检出最小 textarea 题块（回归：isContentEditable 误杀 textarea）');
+  if (qaMinimal) {
+    eq(qaMinimal.kind, 'qa', '回归：自定义规则检出的 kind = qa');
+    eq(qaMinimal.inputs.length, 1, '回归：自定义规则检出的 inputs.length = 1');
+    ok(qaMinimal.inputs[0].type === 'textarea', '回归：自定义规则检出的输入类型 = textarea');
+    ok(qaMinimal.stem.indexOf('光合作用') >= 0, '回归：qa 题干正确');
+  }
+  ok(qaHits.length >= 2, '自定义规则至少检出 2 道大题（含已填内容的那道）', 'found ' + qaHits.length);
+
+  /* ---------------------------------------------------------------- */
+  /* 3.2 回归：textarea 有内容时 answered = true                       */
+  /* ---------------------------------------------------------------- */
+
+  var qTA = byId('qTAAnswered');
+  ok(!!qTA, 'textarea 已填内容的题目被检测到');
+  if (qTA) {
+    eq(qTA.kind, 'qa', 'textarea 已填题 kind = qa');
+    eq(qTA.answered, true, '回归：textarea 有内容时 answered = true');
+  }
+  var qMin = byId('qMinimalQA');
+  ok(!!qMin, '最小 textarea 题块被检测到');
+  if (qMin) eq(qMin.answered, false, '回归：空 textarea 时 answered = false');
+
+  /* ---------------------------------------------------------------- */
+  /* 3.3 回归：viewportOnly 必须做视口相交判断                          */
+  /* ---------------------------------------------------------------- */
+
+  var belowEl = document.getElementById('qBelow');
+  var belowRect = belowEl.getBoundingClientRect();
+  var vh = window.innerHeight || document.documentElement.clientHeight;
+  ok(belowRect.top > vh, '前置条件：qBelow 确实在视口下方（需要滚动）',
+    'top=' + Math.round(belowRect.top) + ' innerHeight=' + vh);
+
+  eq(AD.Detector.isVisible(belowEl, { viewportOnly: true }), false,
+    '回归：isVisible(视口下方的题, viewportOnly=true) = false');
+  eq(AD.Detector.isVisible(belowEl, { viewportOnly: false }), true,
+    '回归：isVisible(视口下方的题, viewportOnly=false) = true');
+
+  // 不传 opts 时应读取 AD.Settings 快照里的 detect.viewportOnly
+  AD.Settings.save({ detect: { viewportOnly: true } });
+  eq(AD.Detector.isVisible(belowEl), false,
+    '回归：isVisible 未传 opts 时按设置 viewportOnly=true → false');
+  AD.Settings.save({ detect: { viewportOnly: false } });
+  eq(AD.Detector.isVisible(belowEl), true,
+    '回归：isVisible 未传 opts 时按设置 viewportOnly=false → true');
+
+  var vpTrue = AD.Detector.scan(document, Object.assign({}, SCAN, { viewportOnly: true }));
+  var vpFalse = AD.Detector.scan(document, Object.assign({}, SCAN, { viewportOnly: false }));
+  ok(!vpTrue.some(function (q) { return q.root && q.root.id === 'qBelow'; }),
+    '回归：viewportOnly=true 时视口下方的题不被检出');
+  ok(vpFalse.some(function (q) { return q.root && q.root.id === 'qBelow'; }),
+    '回归：viewportOnly=false 时视口下方的题能被检出');
+  ok(vpFalse.length > vpTrue.length,
+    '回归：viewportOnly=false 的检出数多于 true', vpTrue.length + ' vs ' + vpFalse.length);
+
+  /* ---------------------------------------------------------------- */
+  /* 4. 稳定 id / maxPerPage / skipAnswered / viewportOnly             */
+  /* ---------------------------------------------------------------- */
+
+  var qs2 = AD.Detector.scan(document, SCAN);
+  eq(qs2.map(function (q) { return q.id; }), qs.map(function (q) { return q.id; }), '重复扫描 id 完全稳定');
+
+  var capped = AD.Detector.scan(document, Object.assign({}, SCAN, { maxPerPage: 3 }));
+  eq(capped.length, 3, 'maxPerPage=3 截断生效');
+  eq(capped.map(function (q) { return q.root.id; }), ['q15', 'q1', 'q2'], '截断保留文档顺序最前面的 3 题');
+
+  var skipAns = AD.Detector.scan(document, Object.assign({}, SCAN, { skipAnswered: true }));
+  eq(skipAns.length, 14, 'skipAnswered=true 时过滤掉已答的 q2 与 qTAAnswered');
+
+  var visibleOnly = AD.Detector.scan(document, Object.assign({}, SCAN, { viewportOnly: true }));
+  ok(visibleOnly.length < 16, 'viewportOnly=true 的检出数少于全量 16 题', 'got ' + visibleOnly.length);
+
+  /* ---------------------------------------------------------------- */
+  /* 5. isVisible / elementKind / buildFromElement                     */
+  /* ---------------------------------------------------------------- */
+
+  ok(AD.Detector.isVisible(document.getElementById('q1'), { viewportOnly: false }) === true, 'isVisible(q1) = true');
+  ok(AD.Detector.isVisible(document.getElementById('q3'), { viewportOnly: false }) === false, 'isVisible(隐藏题) = false');
+  ok(AD.Detector.isVisible(document.getElementById('ignored-q'), { viewportOnly: false }) === false, 'isVisible([data-dati-ignore]) = false');
+  ok(AD.Detector.isVisible(document.body, { viewportOnly: false }) === true, 'isVisible(body) = true');
+
+  eq(AD.Detector.elementKind(document.querySelector('#q1 input[type="radio"]')), 'choice', 'elementKind(radio) = choice');
+  eq(AD.Detector.elementKind(document.querySelector('#q6 input[type="checkbox"]')), 'multi', 'elementKind(checkbox) = multi');
+  eq(AD.Detector.elementKind(document.querySelector('#q5 input[type="radio"]')), 'judge', 'elementKind(判断题 radio) = judge');
+  eq(AD.Detector.elementKind(document.querySelector('#q8 textarea')), 'qa', 'elementKind(textarea) = qa');
+  eq(AD.Detector.elementKind(document.querySelector('#q7 input[type="text"]')), 'blank', 'elementKind(text input) = blank');
+  eq(AD.Detector.elementKind(document.querySelector('#q10 select')), 'blank', 'elementKind(select) = blank');
+  eq(AD.Detector.elementKind(document.querySelector('#q4 .ui-radio')), 'choice', 'elementKind(伪选项) = choice');
+  eq(AD.Detector.elementKind(document.querySelector('#q9 .answer-editor')), 'qa', 'elementKind(contenteditable) = qa');
+
+  var built = AD.Detector.buildFromElement(document.querySelector('#q5 input[type="radio"]'));
+  ok(!!built, 'buildFromElement(判断题 radio) 返回题目');
+  if (built) eq(built.kind, 'judge', 'buildFromElement 推断出 judge');
+
+  var built2 = AD.Detector.buildFromElement(document.querySelector('#q8 textarea'));
+  ok(!!built2, 'buildFromElement(textarea) 返回题目');
+  if (built2) eq(built2.kind, 'qa', 'buildFromElement(textarea) 推断出 qa');
+
+  var built3 = AD.Detector.buildFromElement(document.querySelector('#q11 .optionItem'));
+  ok(!!built3, 'buildFromElement(智慧树伪选项) 返回题目');
+  if (built3) eq(built3.kind, 'choice', 'buildFromElement(伪选项) 推断出 choice');
+
+  ok(AD.Detector.buildFromElement(document.createElement('div')) === null, 'buildFromElement(空 div) = null');
+
+  /* ---------------------------------------------------------------- */
+  /* 6. 站点预设：目前只保留默认启用的智慧树                         */
+  /* ---------------------------------------------------------------- */
+
+  var sites = AD.PRESETS.filter(function (p) { return !!p.site; }).map(function (p) { return p.id; });
+  eq(sites, ['zhihuishu'], '仅保留智慧树站点预设');
+  eq(AD.Settings.DEFAULTS.detect.sitePresets, { zhihuishu: true }, '智慧树站点预设默认开启');
+
+  eq(AD.PRESETS.filter(function (p) { return !p.site; }).length, 0, '不注册通用内置题型规则');
+
+  var presetShapeOk = AD.PRESETS.every(function (p) {
+    return typeof p.id === 'string' && typeof p.name === 'string' && typeof p.desc === 'string' &&
+      typeof p.kind === 'string' && typeof p.enabledByDefault === 'boolean' &&
+      typeof p.site === 'string' && Array.isArray(p.urls) && typeof p.match === 'function';
+  });
+  ok(presetShapeOk, '所有预设结构符合契约（id/name/desc/kind/enabledByDefault/site/urls/match）');
+
+  /* ---------------------------------------------------------------- */
+  /* 7. Filler.parse                                                   */
+  /* ---------------------------------------------------------------- */
+
+  var P = AD.Filler.parse;
+
+  eq(P('choice', 'B').answers, ['B'], 'parse choice：纯字母 "B"');
+  eq(P('multi', 'BD').answers, ['B', 'D'], 'parse multi：连写 "BD"');
+  eq(P('multi', 'A,B,D').answers, ['A', 'B', 'D'], 'parse multi："A,B,D"');
+  eq(P('multi', 'A、C').answers, ['A', 'C'], 'parse multi："A、C"');
+  eq(P('multi', 'A 和 C').answers, ['A', 'C'], 'parse multi："A 和 C"');
+  eq(P('choice', '答案：C').answers, ['C'], 'parse choice："答案：C"');
+  eq(P('choice', '正确答案是 D').answers, ['D'], 'parse choice："正确答案是 D"');
+  eq(P('choice', 'B. 404 Not Found').answers, ['B'], 'parse choice："B. 选项文本"');
+  eq(P('choice', '选B').answers, ['B'], 'parse choice："选B"');
+  eq(P('choice', 'B', q1).answers, ['B'], 'parse choice：结合 question 上下文');
+
+  eq(P('judge', '正确').answers, ['对'], 'parse judge：正确 → 对');
+  eq(P('judge', '错误').answers, ['错'], 'parse judge：错误 → 错');
+  eq(P('judge', '√').answers, ['对'], 'parse judge：√ → 对');
+  eq(P('judge', '×').answers, ['错'], 'parse judge：× → 错');
+  eq(P('judge', 'T').answers, ['对'], 'parse judge：T → 对');
+  eq(P('judge', 'F').answers, ['错'], 'parse judge：F → 错');
+  eq(P('judge', '是').answers, ['对'], 'parse judge：是 → 对');
+  eq(P('judge', '否').answers, ['错'], 'parse judge：否 → 错');
+  eq(P('judge', '答案：正确').answers, ['对'], 'parse judge：答案：正确 → 对');
+
+  eq(P('blank', '1. SYN\n2. SYN-ACK').answers, ['SYN', 'SYN-ACK'], 'parse blank：编号多空');
+  eq(P('blank', '①TCP ②UDP').answers, ['TCP', 'UDP'], 'parse blank：圆圈数字多空');
+  eq(P('blank', '第一空：三次握手\n第二空：四次挥手').answers, ['三次握手', '四次挥手'], 'parse blank：第N空');
+  eq(P('blank', '答案：三次握手').answers, ['三次握手'], 'parse blank：答案前缀');
+
+  var qaParse = P('qa', '第一行答案\n第二行答案');
+  eq(qaParse.answers.length, 1, 'parse qa：整段保留为 1 个答案');
+  ok(qaParse.answers[0].indexOf('第一行') >= 0 && qaParse.answers[0].indexOf('第二行') >= 0, 'parse qa：整段内容完整');
+
+  eq(P('choice', '{"answers":["D"]}').answers, ['D'], 'parse choice：JSON answers');
+  eq(P('multi', '{"answers":["A","C"]}').answers, ['A', 'C'], 'parse multi：JSON answers');
+  eq(P('multi', '```json\n{"answer":["B","D"]}\n```').answers, ['B', 'D'], 'parse multi：代码块包裹的 JSON');
+
+  var empty = P('choice', '');
+  eq(empty.ok, false, 'parse：空输入 ok=false');
+  eq(empty.answers, [], 'parse：空输入 answers=[]');
+
+  var withExplain = P('choice', '答案：A\n解析：因为 A 是正确选项。');
+  eq(withExplain.answers, ['A'], 'parse：自动切掉「解析」段落');
+
+  /* ---------------------------------------------------------------- */
+  /* 8. Filler.apply                                                   */
+  /* ---------------------------------------------------------------- */
+
+  var A = AD.Filler.apply;
+
+  var r1 = A(q1, 'B');
+  ok(r1.ok, 'apply q1：ok', r1.detail);
+  eq(r1.applied, 1, 'apply q1：applied=1');
+  ok(q1.options[1].input.checked === true, 'apply q1：radio B 已选中');
+  ok(q1.options[0].input.checked === false, 'apply q1：radio A 未被选中（单选互斥）');
+
+  var r2 = A(q6, 'A,C');
+  ok(r2.ok, 'apply q6：ok', r2.detail);
+  eq([q6.options[0].input.checked, q6.options[1].input.checked, q6.options[2].input.checked, q6.options[3].input.checked],
+    [true, false, true, false], 'apply q6：多选只勾 A、C，其余取消');
+
+  var r3 = A(q5, '正确');
+  ok(r3.ok, 'apply q5：ok', r3.detail);
+  ok(q5.options[0].input.checked === true, 'apply q5：判断题「正确」被选中');
+  ok(q5.options[1].input.checked === false, 'apply q5：判断题「错误」未被选中');
+
+  var r4 = A(q4, 'B');
+  ok(r4.ok, 'apply q4：伪选项点击生效', r4.detail);
+  ok(q4.options[1].el.classList.contains('selected'), 'apply q4：第 2 个伪选项带 selected 类');
+  ok(!q4.options[0].el.classList.contains('selected'), 'apply q4：第 1 个伪选项未被选中');
+
+  var r5 = A(q7, '1. SYN\n2. SYN-ACK');
+  ok(r5.ok, 'apply q7：ok', r5.detail);
+  eq(r5.applied, 2, 'apply q7：applied=2（两个空都写了）');
+  eq(document.querySelector('#q7 input[name="q7_1"]').value, 'SYN', 'apply q7：第一空 = SYN');
+  eq(document.querySelector('#q7 input[name="q7_2"]').value, 'SYN-ACK', 'apply q7：第二空 = SYN-ACK');
+
+  var longAnswer = 'HTTPS 先通过 TCP 三次握手建立连接，随后进行 TLS 握手：客户端发送 ClientHello，服务端返回 ServerHello 与证书，客户端校验证书后生成会话密钥并加密传输。';
+  var r6 = A(q8, longAnswer);
+  ok(r6.ok, 'apply q8：ok', r6.detail);
+  ok(document.querySelector('#q8 textarea').value.indexOf('TLS 握手') >= 0, 'apply q8：textarea 写入了整段答案');
+
+  var r7 = A(q9, '性能优化包括减少重排重绘、资源压缩、懒加载与缓存策略。');
+  ok(r7.ok, 'apply q9：ok', r7.detail);
+  ok(document.querySelector('#q9 .answer-editor').textContent.indexOf('懒加载') >= 0, 'apply q9：contenteditable 写入了答案');
+
+  var r8 = A(q10, 'DISTINCT');
+  ok(r8.ok, 'apply q10：ok', r8.detail);
+  eq(document.querySelector('#q10 select').value, '1', 'apply q10：select 选中 DISTINCT（value=1）');
+
+  var r9 = A(q10, 'B');
+  ok(r9.ok, 'apply q10：按字母 B 选择下拉项', r9.detail);
+  eq(document.querySelector('#q10 select').value, '2', 'apply q10：字母 B → 第 2 个有效项 GROUP');
+
+  var r10 = A(q1, 'Z');
+  eq(r10.ok, false, 'apply：匹配不到的答案返回 ok=false');
+  ok(r10.detail.length > 0, 'apply：失败时给出 detail');
+
+  var r11 = A(q1, 'B', { dryRun: true });
+  ok(r11.ok && r11.applied === 0, 'apply：dryRun 不写入页面');
+
+  /* ---------------------------------------------------------------- */
+  /* 9. 绝不提交表单                                                   */
+  /* ---------------------------------------------------------------- */
+
+  ok(submitted === false, 'apply 全过程未触发表单提交（submit 事件未触发）');
+  ok(!document.querySelector('#paper button[type="submit"]'), 'fixture 内没有提交按钮');
+
+  /* ---------------------------------------------------------------- */
+  /* 10. observe（异步）                                               */
+  /* ---------------------------------------------------------------- */
+
+  var stopFn = null;
+  var observeDone = false;
+
+  function finish() {
+    if (observeDone) return;
+    observeDone = true;
+    if (stopFn) { try { stopFn(); } catch (e) { /* noop */ } }
+    flush(fail === 0 ? 'pass' : 'fail');
+  }
+
+  try {
+    var callCount = 0;
+    var sawAdded = false;
+    stopFn = AD.Detector.observe(function (payload) {
+      callCount++;
+      if (payload && payload.added && payload.added.length) {
+        for (var i = 0; i < payload.added.length; i++) {
+          if (payload.added[i].stem && payload.added[i].stem.indexOf('动态插入') >= 0) sawAdded = true;
+        }
+      }
+    }, { scanOpts: { viewportOnly: false, skipAnswered: false, maxPerPage: 50, shadowDom: true } });
+
+    // 动态插入一题，触发 MutationObserver
+    var dyn = document.getElementById('dynamic-area');
+    dyn.innerHTML =
+      '<div class="question" id="q14">' +
+        '<div class="q-title">14. 动态插入的题目：以下哪个是 HTTP/2 的特性？</div>' +
+        '<div class="q-options">' +
+          '<label><input type="radio" name="q14" value="A"> A. 多路复用</label>' +
+          '<label><input type="radio" name="q14" value="B"> B. 明文传输</label>' +
+        '</div>' +
+      '</div>';
+
+    var waited = 0;
+    var timer = setInterval(function () {
+      waited += 100;
+      if (sawAdded || waited >= 2000) {
+        clearInterval(timer);
+        ok(callCount > 0, 'observe：回调被触发（MutationObserver + 去抖）', 'callCount=' + callCount);
+        ok(sawAdded, 'observe：回调的 added 里含动态插入的题目');
+        var afterScan = AD.Detector.scan(document, SCAN);
+        ok(afterScan.some(function (q) { return q.root && q.root.id === 'q14'; }), '动态插入后重新 scan 能检出该题');
+        finish();
+      }
+    }, 100);
+  } catch (e2) {
+    ok(false, 'observe 未抛异常', e2 && e2.message);
+    finish();
+  }
+
+  // 兜底：无论如何 3s 后出结果
+  setTimeout(finish, 3000);
+}());
+</script>
+</body>
+</html>

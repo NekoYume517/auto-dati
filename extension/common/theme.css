@@ -1,0 +1,998 @@
+/* ============================================================================
+ * AutoDati · 设计令牌 + 公共组件
+ * 界面命名使用 dati- 前缀，避免广告过滤器误匹配。覆盖层（Shadow DOM）与扩展页面共用本文件。
+ * 默认深色；.dati-root[data-theme="light"] 切浅色；[data-theme="auto"] 跟随系统。
+ * ========================================================================== */
+
+/* ------------------------------------------------------------------ 令牌 */
+
+.dati-root {
+  color-scheme: dark;
+
+  /* 表面与文字 */
+  --dati-bg: #151719;
+  --dati-bg-soft: #1c1f22;
+  --dati-bg-elev: #202327;
+  --dati-glass: rgba(32, 35, 39, 0.97);
+  --dati-border: rgba(255, 255, 255, 0.085);
+  --dati-border-strong: rgba(255, 255, 255, 0.18);
+  --dati-text: #f0f2f4;
+  --dati-text-dim: #b4bac3;
+  --dati-text-mute: #8f97a3;
+
+  /* 强调色（靛蓝 → 紫罗兰） */
+  --dati-accent: #6366f1;
+  --dati-accent-2: #8b5cf6;
+  --dati-accent-fg: #ffffff;
+  --dati-accent-soft: rgba(99, 102, 241, 0.16);
+  --dati-accent-glow: rgba(99, 102, 241, 0.42);
+
+  /* 语义色 */
+  --dati-success: #34d399;
+  --dati-success-soft: rgba(52, 211, 153, 0.14);
+  --dati-warn: #fbbf24;
+  --dati-warn-soft: rgba(251, 191, 36, 0.14);
+  --dati-danger: #f87171;
+  --dati-danger-soft: rgba(248, 113, 113, 0.14);
+  --dati-focus: #a5b4fc;
+
+  /* 圆角 */
+  --dati-r-xs: 6px;
+  --dati-r-sm: 8px;
+  --dati-r-md: 12px;
+  --dati-r-lg: 16px;
+  --dati-r-xl: 20px;
+  --dati-r-full: 999px;
+  --dati-r-card: 14px; /* 追加：卡片层 */
+  --dati-r-btn: 9px;   /* 追加：按钮层 */
+
+  /* 阴影 */
+  --dati-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.36), 0 1px 1px rgba(0, 0, 0, 0.2);
+  --dati-shadow-md: 0 10px 26px -14px rgba(0, 0, 0, 0.72), 0 2px 8px -4px rgba(0, 0, 0, 0.5);
+  --dati-shadow-lg: 0 30px 70px -28px rgba(0, 0, 0, 0.85), 0 12px 26px -16px rgba(0, 0, 0, 0.6);
+
+  /* 字体 */
+  --dati-font: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei",
+    "Noto Sans SC", system-ui, sans-serif;
+  --dati-font-mono: ui-monospace, SFMono-Regular, "SF Mono", "Cascadia Mono",
+    "Cascadia Code", Consolas, "Liberation Mono", monospace;
+  --dati-fs: 13px;
+  --dati-lh: 1.6;
+
+  /* 动效 */
+  --dati-dur-fast: 120ms;
+  --dati-dur: 180ms;
+  --dati-dur-slow: 240ms;
+  --dati-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --dati-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* 杂项 */
+  --dati-z: 2147483000;
+  --dati-blur: 18px;
+
+  box-sizing: border-box;
+  font-family: var(--dati-font);
+  font-size: var(--dati-fs);
+  line-height: var(--dati-lh);
+  color: var(--dati-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  accent-color: var(--dati-accent);
+}
+
+.dati-root *,
+.dati-root *::before,
+.dati-root *::after {
+  box-sizing: border-box;
+}
+
+.dati-root ::selection {
+  background: var(--dati-accent-soft);
+  color: var(--dati-text);
+}
+
+/* -------------------------------------------------------------- 浅色主题 */
+
+.dati-root[data-theme="light"] {
+  color-scheme: light;
+
+  --dati-bg: #f5f6f8;
+  --dati-bg-soft: #eceef2;
+  --dati-bg-elev: #ffffff;
+  --dati-glass: rgba(255, 255, 255, 0.97);
+  --dati-border: rgba(16, 24, 40, 0.1);
+  --dati-border-strong: rgba(16, 24, 40, 0.2);
+  --dati-text: #20242d;
+  --dati-text-dim: #525d6b;
+  --dati-text-mute: #747e8d;
+
+  --dati-accent: #5b5ef0;
+  --dati-accent-2: #8b5cf6;
+  --dati-accent-fg: #ffffff;
+  --dati-accent-soft: rgba(91, 94, 240, 0.1);
+  --dati-accent-glow: rgba(91, 94, 240, 0.28);
+
+  --dati-success: #0f9d76;
+  --dati-success-soft: rgba(15, 157, 118, 0.12);
+  --dati-warn: #b45309;
+  --dati-warn-soft: rgba(180, 83, 9, 0.12);
+  --dati-danger: #dc2626;
+  --dati-danger-soft: rgba(220, 38, 38, 0.1);
+  --dati-focus: #4338ca;
+
+  --dati-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.07);
+  --dati-shadow-md: 0 10px 24px -16px rgba(16, 24, 40, 0.28), 0 2px 6px -3px rgba(16, 24, 40, 0.1);
+  --dati-shadow-lg: 0 30px 60px -30px rgba(16, 24, 40, 0.35), 0 10px 24px -16px rgba(16, 24, 40, 0.18);
+}
+
+/* auto：仅系统为浅色时生效，深色系统沿用上面的默认值 */
+@media (prefers-color-scheme: light) {
+  .dati-root[data-theme="auto"] {
+    color-scheme: light;
+
+    --dati-bg: #f5f6f8;
+    --dati-bg-soft: #eceef2;
+    --dati-bg-elev: #ffffff;
+    --dati-glass: rgba(255, 255, 255, 0.97);
+    --dati-border: rgba(16, 24, 40, 0.1);
+    --dati-border-strong: rgba(16, 24, 40, 0.2);
+    --dati-text: #20242d;
+    --dati-text-dim: #525d6b;
+    --dati-text-mute: #747e8d;
+
+    --dati-accent: #5b5ef0;
+    --dati-accent-2: #8b5cf6;
+    --dati-accent-fg: #ffffff;
+    --dati-accent-soft: rgba(91, 94, 240, 0.1);
+    --dati-accent-glow: rgba(91, 94, 240, 0.28);
+
+    --dati-success: #0f9d76;
+    --dati-success-soft: rgba(15, 157, 118, 0.12);
+    --dati-warn: #b45309;
+    --dati-warn-soft: rgba(180, 83, 9, 0.12);
+    --dati-danger: #dc2626;
+    --dati-danger-soft: rgba(220, 38, 38, 0.1);
+    --dati-focus: #4338ca;
+
+    --dati-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.07);
+    --dati-shadow-md: 0 10px 24px -16px rgba(16, 24, 40, 0.28), 0 2px 6px -3px rgba(16, 24, 40, 0.1);
+    --dati-shadow-lg: 0 30px 60px -30px rgba(16, 24, 40, 0.35), 0 10px 24px -16px rgba(16, 24, 40, 0.18);
+  }
+}
+
+/* ------------------------------------------------------------ 按钮 / 交互 */
+
+.dati-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--dati-border);
+  border-radius: var(--dati-r-btn);
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--dati-text);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 550;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  text-decoration: none;
+  transition: transform var(--dati-dur-fast) var(--dati-ease),
+    background-color var(--dati-dur) var(--dati-ease),
+    border-color var(--dati-dur) var(--dati-ease),
+    color var(--dati-dur) var(--dati-ease),
+    box-shadow var(--dati-dur) var(--dati-ease),
+    opacity var(--dati-dur) var(--dati-ease);
+}
+
+.dati-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.dati-btn:disabled,
+.dati-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dati-btn--primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--dati-accent) 0%, var(--dati-accent-2) 100%);
+  color: var(--dati-accent-fg);
+  box-shadow: 0 6px 18px -10px var(--dati-accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.dati-btn--ghost {
+  background: transparent;
+  border-color: var(--dati-border);
+  color: var(--dati-text-dim);
+}
+
+.dati-btn--danger {
+  background: var(--dati-danger-soft);
+  border-color: color-mix(in srgb, var(--dati-danger) 34%, transparent);
+  color: var(--dati-danger);
+}
+
+.dati-btn--icon {
+  width: 34px;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.dati-btn--sm {
+  height: 27px;
+  padding: 0 10px;
+  font-size: 11.5px;
+  border-radius: var(--dati-r-sm);
+  gap: 5px;
+}
+
+.dati-btn--sm.dati-btn--icon {
+  width: 27px;
+  padding: 0;
+}
+
+.dati-btn .dati-btn__icon,
+.dati-btn svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+.dati-btn--sm svg {
+  width: 13px;
+  height: 13px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dati-btn:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--dati-border-strong);
+  }
+  .dati-btn--primary:not(:disabled):hover {
+    background: linear-gradient(135deg, var(--dati-accent) 0%, var(--dati-accent-2) 100%);
+    filter: brightness(1.07);
+    box-shadow: 0 10px 26px -12px var(--dati-accent-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  }
+  .dati-btn--ghost:not(:disabled):hover {
+    color: var(--dati-text);
+    background: rgba(255, 255, 255, 0.055);
+  }
+  .dati-btn--danger:not(:disabled):hover {
+    background: color-mix(in srgb, var(--dati-danger) 22%, transparent);
+    border-color: color-mix(in srgb, var(--dati-danger) 50%, transparent);
+  }
+}
+
+.dati-root[data-theme="light"] .dati-btn:not(.dati-btn--primary) {
+  background: #ffffff;
+  border-color: var(--dati-border);
+  color: var(--dati-text-dim);
+}
+
+.dati-root[data-theme="light"] .dati-btn--danger {
+  background: var(--dati-danger-soft);
+  color: var(--dati-danger);
+}
+
+@media (prefers-color-scheme: light) {
+  .dati-root[data-theme="auto"] .dati-btn:not(.dati-btn--primary) {
+    background: #ffffff;
+    border-color: var(--dati-border);
+    color: var(--dati-text-dim);
+  }
+  .dati-root[data-theme="auto"] .dati-btn--danger {
+    background: var(--dati-danger-soft);
+    color: var(--dati-danger);
+  }
+}
+
+/* --------------------------------------------------------- 输入 / 表单控件 */
+
+.dati-input,
+.dati-textarea,
+.dati-select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--dati-border);
+  border-radius: var(--dati-r-sm);
+  background: rgba(0, 0, 0, 0.24);
+  color: var(--dati-text);
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.5;
+  transition: border-color var(--dati-dur) var(--dati-ease),
+    box-shadow var(--dati-dur) var(--dati-ease),
+    background-color var(--dati-dur) var(--dati-ease);
+}
+
+.dati-input,
+.dati-select {
+  height: 34px;
+  padding: 0 11px;
+}
+
+.dati-textarea {
+  min-height: 78px;
+  padding: 9px 11px;
+  line-height: 1.65;
+  resize: vertical;
+}
+
+.dati-input::placeholder,
+.dati-textarea::placeholder {
+  color: var(--dati-text-mute);
+}
+
+.dati-input:hover,
+.dati-textarea:hover,
+.dati-select:hover {
+  border-color: var(--dati-border-strong);
+}
+
+.dati-input:focus,
+.dati-textarea:focus,
+.dati-select:focus {
+  outline: none;
+  border-color: var(--dati-accent);
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px var(--dati-accent-soft);
+}
+
+.dati-input:disabled,
+.dati-textarea:disabled,
+.dati-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dati-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%238b93a7' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6.5 8 10.5 12 6.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  background-size: 14px 14px;
+  cursor: pointer;
+}
+
+.dati-select option {
+  background: var(--dati-bg-elev);
+  color: var(--dati-text);
+}
+
+.dati-input--mono,
+.dati-textarea--mono {
+  font-family: var(--dati-font-mono);
+  font-size: 12px;
+  letter-spacing: -0.01em;
+}
+
+.dati-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dati-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  color: var(--dati-text-dim);
+  user-select: none;
+}
+
+.dati-hint {
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--dati-text-mute);
+}
+
+.dati-hint--warn {
+  color: var(--dati-warn);
+}
+
+.dati-hint--danger {
+  color: var(--dati-danger);
+}
+
+/* 开关：input 自身即轨道，无额外节点依赖 */
+.dati-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  font-size: 12.5px;
+  color: var(--dati-text-dim);
+}
+
+.dati-switch input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 22px;
+  margin: 0;
+  border: 1px solid var(--dati-border-strong);
+  border-radius: var(--dati-r-full);
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: background-color var(--dati-dur) var(--dati-ease),
+    border-color var(--dati-dur) var(--dati-ease),
+    box-shadow var(--dati-dur) var(--dati-ease),
+    transform var(--dati-dur-fast) var(--dati-ease);
+}
+
+.dati-switch input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  transition: transform var(--dati-dur) var(--dati-ease),
+    background-color var(--dati-dur) var(--dati-ease);
+}
+
+.dati-switch input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, var(--dati-accent), var(--dati-accent-2));
+  border-color: transparent;
+  box-shadow: 0 0 0 3px var(--dati-accent-soft);
+}
+
+.dati-switch input[type="checkbox"]:checked::after {
+  transform: translateX(16px);
+}
+
+.dati-switch input[type="checkbox"]:active {
+  transform: scale(0.97);
+}
+
+.dati-switch input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--dati-accent-soft), 0 0 0 4px var(--dati-focus);
+}
+
+.dati-switch input[type="checkbox"]:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* 大号变体（总开关） */
+.dati-switch--lg input[type="checkbox"] {
+  width: 46px;
+  height: 27px;
+}
+
+.dati-switch--lg input[type="checkbox"]::after {
+  width: 21px;
+  height: 21px;
+}
+
+.dati-switch--lg input[type="checkbox"]:checked::after {
+  transform: translateX(19px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dati-switch:hover input[type="checkbox"]:not(:disabled) {
+    border-color: var(--dati-border-strong);
+  }
+  .dati-switch:hover input[type="checkbox"]:checked:not(:disabled) {
+    filter: brightness(1.08);
+  }
+}
+
+/* 原生 range：统一轨道与滑块 */
+.dati-root input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dati-root input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: var(--dati-r-full);
+  background: linear-gradient(
+    90deg,
+    var(--dati-accent) 0%,
+    var(--dati-accent-2) var(--range-progress, 50%),
+    rgba(255, 255, 255, 0.12) var(--range-progress, 50%),
+    rgba(255, 255, 255, 0.12) 100%
+  );
+}
+
+.dati-root input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  transition: transform var(--dati-dur-fast) var(--dati-ease),
+    box-shadow var(--dati-dur-fast) var(--dati-ease);
+}
+
+.dati-root input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(0.94);
+}
+
+.dati-root input[type="range"]:focus-visible {
+  outline: none;
+}
+
+.dati-root input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--dati-accent-soft), 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* 原生 color */
+.dati-root input[type="color"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--dati-border);
+  border-radius: var(--dati-r-sm);
+  background: transparent;
+  cursor: pointer;
+}
+
+.dati-root input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 3px;
+}
+
+.dati-root input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 5px;
+}
+
+/* 文件选择 */
+.dati-root input[type="file"] {
+  font-size: 12px;
+  color: var(--dati-text-dim);
+}
+
+/* --------------------------------------------------------------- 卡片 / 容器 */
+
+.dati-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--dati-border);
+  border-radius: var(--dati-r-card);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.045) 0%,
+    rgba(255, 255, 255, 0.018) 100%
+  );
+  box-shadow: var(--dati-shadow-sm);
+}
+
+.dati-root[data-theme="light"] .dati-card {
+  background: #ffffff;
+  border-color: rgba(16, 24, 40, 0.08);
+  box-shadow: var(--dati-shadow-sm);
+}
+
+@media (prefers-color-scheme: light) {
+  .dati-root[data-theme="auto"] .dati-card {
+    background: #ffffff;
+    border-color: rgba(16, 24, 40, 0.08);
+    box-shadow: var(--dati-shadow-sm);
+  }
+}
+
+.dati-card__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--dati-text);
+}
+
+.dati-card__title svg {
+  width: 15px;
+  height: 15px;
+  color: var(--dati-accent);
+  flex: 0 0 auto;
+}
+
+.dati-card__title .dati-card__aside {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--dati-text-mute);
+}
+
+.dati-card--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+.dati-card--flat {
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: none;
+}
+
+.dati-root[data-theme="light"] .dati-card--flat {
+  background: #f7f8fc;
+}
+
+/* ------------------------------------------------------------- 徽标 / 标签 */
+
+.dati-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 19px;
+  padding: 0 7px;
+  border: 1px solid var(--dati-border);
+  border-radius: var(--dati-r-full);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--dati-text-dim);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.dati-badge--accent {
+  border-color: transparent;
+  background: var(--dati-accent-soft);
+  color: var(--dati-accent);
+}
+
+.dati-badge--ok {
+  border-color: transparent;
+  background: var(--dati-success-soft);
+  color: var(--dati-success);
+}
+
+.dati-badge--warn {
+  border-color: transparent;
+  background: var(--dati-warn-soft);
+  color: var(--dati-warn);
+}
+
+.dati-badge--danger {
+  border-color: transparent;
+  background: var(--dati-danger-soft);
+  color: var(--dati-danger);
+}
+
+.dati-badge--dot::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+.dati-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--dati-border);
+  border-radius: var(--dati-r-full);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--dati-text-dim);
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: transform var(--dati-dur-fast) var(--dati-ease),
+    background-color var(--dati-dur) var(--dati-ease),
+    border-color var(--dati-dur) var(--dati-ease),
+    color var(--dati-dur) var(--dati-ease);
+}
+
+button.dati-chip {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button.dati-chip:active {
+  transform: scale(0.97);
+}
+
+.dati-chip.is-on {
+  border-color: transparent;
+  background: var(--dati-accent-soft);
+  color: var(--dati-accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button.dati-chip:hover {
+    border-color: var(--dati-border-strong);
+    color: var(--dati-text);
+  }
+}
+
+/* --------------------------------------------------------------- 分段标签页 */
+
+.dati-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--dati-border);
+  border-radius: var(--dati-r-btn);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.dati-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 11px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dati-text-mute);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform var(--dati-dur-fast) var(--dati-ease),
+    background-color var(--dati-dur) var(--dati-ease),
+    color var(--dati-dur) var(--dati-ease),
+    box-shadow var(--dati-dur) var(--dati-ease);
+}
+
+.dati-tab:active {
+  transform: scale(0.97);
+}
+
+.dati-tab.is-active {
+  background: var(--dati-bg-elev);
+  color: var(--dati-text);
+  box-shadow: var(--dati-shadow-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dati-tab:not(.is-active):hover {
+    color: var(--dati-text-dim);
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* ------------------------------------------------------------ 状态 / 骨架 */
+
+.dati-spinner {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--dati-border-strong);
+  border-top-color: var(--dati-accent);
+  border-radius: 50%;
+  animation: dati-spin 720ms linear infinite;
+}
+
+.dati-spinner--lg {
+  width: 22px;
+  height: 22px;
+  border-width: 2.5px;
+}
+
+@keyframes dati-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dati-skeleton {
+  position: relative;
+  overflow: hidden;
+  min-height: 12px;
+  border-radius: var(--dati-r-xs);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dati-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.09) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: dati-shimmer 1.4s var(--dati-ease-in-out) infinite;
+}
+
+@keyframes dati-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.dati-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 26px 18px;
+  border: 1px dashed var(--dati-border-strong);
+  border-radius: var(--dati-r-md);
+  color: var(--dati-text-mute);
+  font-size: 12px;
+  text-align: center;
+}
+
+.dati-empty strong {
+  color: var(--dati-text-dim);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ 浮层 */
+
+.dati-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: var(--dati-z);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border: 1px solid var(--dati-border-strong);
+  border-radius: var(--dati-r-md);
+  background: var(--dati-glass);
+  -webkit-backdrop-filter: blur(var(--dati-blur)) saturate(150%);
+  backdrop-filter: blur(var(--dati-blur)) saturate(150%);
+  box-shadow: var(--dati-shadow-lg);
+  color: var(--dati-text);
+  font-size: 12.5px;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translate(-50%, 10px);
+  pointer-events: none;
+  transition: opacity var(--dati-dur) var(--dati-ease),
+    transform var(--dati-dur) var(--dati-ease);
+}
+
+.dati-toast.is-show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.dati-toast--ok {
+  border-color: color-mix(in srgb, var(--dati-success) 38%, transparent);
+}
+
+.dati-toast--danger {
+  border-color: color-mix(in srgb, var(--dati-danger) 38%, transparent);
+}
+
+/* ---------------------------------------------------------------- 滚动条 */
+
+.dati-scroll {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dati-border-strong) transparent;
+  overscroll-behavior: contain;
+}
+
+.dati-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dati-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dati-scroll::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: var(--dati-r-full);
+  background-clip: padding-box;
+  background-color: var(--dati-border-strong);
+}
+
+.dati-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--dati-text-mute);
+}
+
+/* ------------------------------------------------------------ 键帽 / 分隔 */
+
+.dati-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--dati-border-strong);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--dati-text-dim);
+  font-family: var(--dati-font-mono);
+  font-size: 10.5px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.dati-divider {
+  height: 1px;
+  margin: 2px 0;
+  border: 0;
+  background: var(--dati-border);
+}
+
+.dati-divider--v {
+  width: 1px;
+  height: 16px;
+  margin: 0;
+}
+
+/* ------------------------------------------------------- 减少动态效果降级 */
+
+@media (prefers-reduced-motion: reduce) {
+  .dati-root *,
+  .dati-root *::before,
+  .dati-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* 加载指示仍需可见地转动 */
+  .dati-root .dati-spinner {
+    animation-duration: 1.1s !important;
+    animation-iteration-count: infinite !important;
+  }
+  .dati-root .dati-skeleton::after {
+    animation-duration: 2.4s !important;
+    animation-iteration-count: infinite !important;
+  }
+}

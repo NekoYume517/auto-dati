@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>AutoDati E2E 测试页</title>
+<style>
+  body { font: 14px/1.7 "Segoe UI", "Microsoft YaHei", sans-serif; max-width: 820px; margin: 32px auto; padding: 0 16px; color: #1f2430; }
+  h1 { font-size: 20px; }
+  .q { border: 1px solid #e3e6ef; border-radius: 10px; padding: 14px 16px; margin: 14px 0; }
+  .q.hidden { display: none; }
+  .stem { font-weight: 600; margin-bottom: 8px; }
+  .opt { display: block; padding: 3px 0; cursor: pointer; }
+  .opt input { margin-right: 8px; }
+  .blank { border: 1px solid #cbd2e1; border-radius: 6px; padding: 4px 8px; width: 160px; }
+  textarea { width: 100%; min-height: 70px; border: 1px solid #cbd2e1; border-radius: 6px; padding: 8px; font: inherit; }
+  #status { position: fixed; right: 12px; top: 12px; font: 12px monospace; background: #f4f5f9; padding: 6px 10px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<h1>综合测验（E2E）</h1>
+<div id="status">idle</div>
+
+<!-- Q1 单选题 -->
+<div class="q" id="q1">
+  <div class="stem">1. 下列哪个选项是质数？</div>
+  <label class="opt"><input type="radio" name="q1" value="A" /> A. 4</label>
+  <label class="opt"><input type="radio" name="q1" value="B" /> B. 7</label>
+  <label class="opt"><input type="radio" name="q1" value="C" /> C. 9</label>
+  <label class="opt"><input type="radio" name="q1" value="D" /> D. 15</label>
+</div>
+
+<!-- Q2 多选题 -->
+<div class="q" id="q2">
+  <div class="stem">2. 下列哪些属于哺乳动物？（多选）</div>
+  <label class="opt"><input type="checkbox" name="q2" value="A" /> A. 鲸鱼</label>
+  <label class="opt"><input type="checkbox" name="q2" value="B" /> B. 鲨鱼</label>
+  <label class="opt"><input type="checkbox" name="q2" value="C" /> C. 蝙蝠</label>
+  <label class="opt"><input type="checkbox" name="q2" value="D" /> D. 企鹅</label>
+</div>
+
+<!-- Q3 判断题 -->
+<div class="q" id="q3">
+  <div class="stem">3. 判断：水的沸点在标准大气压下是 100 摄氏度。</div>
+  <label class="opt"><input type="radio" name="q3" value="T" /> 正确</label>
+  <label class="opt"><input type="radio" name="q3" value="F" /> 错误</label>
+</div>
+
+<!-- Q4 填空题 -->
+<div class="q" id="q4">
+  <div class="stem">4. 填空：植物进行光合作用的主要场所是____，其中吸收光能的色素位于____。</div>
+  <input class="blank" type="text" name="q4_1" placeholder="第一空" />
+  <input class="blank" type="text" name="q4_2" placeholder="第二空" />
+</div>
+
+<!-- Q5 大题 -->
+<div class="q" id="q5">
+  <div class="stem">5. 简答题：请简述光合作用的过程。</div>
+  <textarea name="q5"></textarea>
+</div>
+
+<!-- Q6 隐藏题（不应被作答） -->
+<div class="q hidden" id="q6">
+  <div class="stem">6. 这道题是隐藏的，不应该被检测到。</div>
+  <label class="opt"><input type="radio" name="q6" value="A" /> A. 选项一</label>
+  <label class="opt"><input type="radio" name="q6" value="B" /> B. 选项二</label>
+</div>
+
+<!-- Q7 已答题（skipAnswered 应跳过） -->
+<div class="q" id="q7">
+  <div class="stem">7. 下列哪个是偶数？（已作答）</div>
+  <label class="opt"><input type="radio" name="q7" value="A" /> A. 3</label>
+  <label class="opt"><input type="radio" name="q7" value="B" checked /> B. 8</label>
+  <label class="opt"><input type="radio" name="q7" value="C" /> C. 11</label>
+</div>
+
+<script>
+  // 给内容脚本一点可观测的状态
+  window.__e2e = { ready: true, at: Date.now() };
+  document.getElementById('status').textContent = 'ready';
+</script>
+</body>
+</html>

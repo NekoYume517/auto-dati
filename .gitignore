@@ -1,5 +1,11 @@
 *.pem
+*.key
 *.crx
 extension.zip
 dist/
+node_modules/
 test/screens/
+*.log
+.env
+.env.*
+!.env.example

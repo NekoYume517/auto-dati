@@ -1,0 +1,42 @@
+name: Release extension
+on:
+  push:
+    branches: ['main']
+    paths: ['release-assets/**']
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate release tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: node -e 'if (process.env.GITHUB_REF_NAME !== "v" + require("./extension/manifest.json").version) process.exit(1)'
+      - name: Build signed CRX3 and ZIP
+        env:
+          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -n "$CRX_PRIVATE_KEY" ]; then
+            node tools/build-release.mjs
+          else
+            node tools/fetch-release-assets.mjs
+          fi
+      - name: Publish versioned release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          version="$(node -p 'require("./extension/manifest.json").version')"
+          tag="v$version"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --clobber
+          else
+            gh release create "$tag" dist/* --target "$GITHUB_SHA" --title "AutoDati $tag" --notes-file docs/RELEASE-NOTES.md
+          fi

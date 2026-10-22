@@ -1,0 +1,95 @@
+{
+  "manifest_version": 3,
+  "name": "AutoDati · 自动答题助手",
+  "short_name": "AutoDati",
+  "version": "0.2.0",
+  "homepage_url": "https://github.com/NekoYume517/auto-dati",
+  "description": "检测页面上的选择题 / 填空题 / 大题，自动答题或弹窗流式作答；支持区域截图答题与自定义 LLM API。",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwHnflW5vE+/yWxygml4DzxQPU3NCdHRcplbEeLFlUdDpwRiwEVUSck5zpZF8aeN/wvWTKBgnFP8s9iwPniZbLRu4Y9N/CQqn2O8RKgRxuqyW/VyuxtlGAUx7p5NtXsXq7gFW86bykGBv7Q6iD62UgfcmqgsNtLEMzCNAnCM7Ghvmo0VcgYrak+9rSWs+PGDamfAmvhxPoeM25Go1r30QkEc6hxMg9+mln8PNGlfWcWqewBfc1nnHG5herRbuPT0kvFGeagynfnrBocFugbNlDKu+8giAqnDZdEuqvkC+oyg/fTkPUJAClqhuPC/mEpSA4FFxy+Ow8KBHCCFuI39ELQIDAQAB",
+  "minimum_chrome_version": "116",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "common/protocol.js",
+        "common/settings.js",
+        "content/presets.js",
+        "content/detector.js",
+        "content/filler.js",
+        "content/overlay-style.js",
+        "content/overlay.js",
+        "content/frame.js",
+        "content/picker.js",
+        "content/capture.js",
+        "content/navigation.js",
+        "content/content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true,
+      "match_origin_as_fallback": true
+    }
+  ],
+  "options_ui": {
+    "page": "ui/options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "AutoDati · 自动答题助手",
+    "default_popup": "ui/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "commands": {
+    "answer-hover": {
+      "suggested_key": { "default": "Alt+Shift+A" },
+      "description": "对鼠标下的题目作答"
+    },
+    "capture-answer": {
+      "suggested_key": { "default": "Alt+Shift+S" },
+      "description": "区域截图答题"
+    },
+    "toggle-auto": {
+      "suggested_key": { "default": "Alt+Shift+Z" },
+      "description": "切换自动答题模式"
+    },
+    "toggle-popup": {
+      "suggested_key": { "default": "Alt+Shift+X" },
+      "description": "切换弹窗模式"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "common/theme.css",
+        "content/overlay.css",
+        "icons/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

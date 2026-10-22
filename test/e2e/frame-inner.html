@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>子框架题目</title>
+<style>
+  body { font: 13px/1.6 "Segoe UI", "Microsoft YaHei", sans-serif; margin: 14px; color: #1f2430; }
+  .q { border: 1px solid #dde2ee; border-radius: 8px; padding: 10px 12px; margin: 8px 0; }
+  .stem { font-weight: 600; margin-bottom: 6px; }
+  .opt { display: block; padding: 2px 0; }
+  .blank { border: 1px solid #cbd2e1; border-radius: 5px; padding: 3px 7px; width: 120px; }
+  textarea { width: 100%; min-height: 52px; border: 1px solid #cbd2e1; border-radius: 5px; padding: 6px; font: inherit; }
+</style>
+</head>
+<body>
+<div class="q" id="fq1">
+  <div class="stem">子框架单选：中国的首都是？</div>
+  <label class="opt"><input type="radio" name="fq1" value="A" /> A. 上海</label>
+  <label class="opt"><input type="radio" name="fq1" value="B" /> B. 北京</label>
+  <label class="opt"><input type="radio" name="fq1" value="C" /> C. 广州</label>
+</div>
+
+<div class="q" id="fq2">
+  <div class="stem">子框架填空：地球唯一的天然卫星是____。</div>
+  <input class="blank" type="text" name="fq2" placeholder="填空" />
+</div>
+
+<div class="q" id="fq3">
+  <div class="stem">子框架大题：请简述牛顿第一定律。</div>
+  <textarea name="fq3"></textarea>
+</div>
+
+<script>
+  window.__innerReady = true;
+</script>
+</body>
+</html>

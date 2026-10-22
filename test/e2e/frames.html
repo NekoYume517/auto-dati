@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>AutoDati iframe 测试</title>
+<style>
+  body { font: 14px/1.7 "Segoe UI", "Microsoft YaHei", sans-serif; margin: 20px; color: #1f2430; }
+  h1 { font-size: 18px; }
+  .frame-box { border: 2px solid #6366f1; border-radius: 8px; padding: 0; margin: 16px 0; overflow: hidden; }
+  iframe { display: block; width: 100%; height: 420px; border: 0; }
+  .note { font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+<h1>iframe 兼容测试</h1>
+<p class="note">下方 iframe 内有题目；扩展需要能把子框架里的题交给顶层弹面板，并正确换算截图坐标。</p>
+
+<!-- 同源 iframe：题目在子框架内 -->
+<div class="frame-box" id="box1">
+  <iframe id="f1" src="frame-inner.html"></iframe>
+</div>
+
+<!-- 同源 iframe：无题目（对照） -->
+<div class="frame-box" id="box2">
+  <iframe id="f2" src="frame-empty.html"></iframe>
+</div>
+
+<div class="q" id="topq">
+  <div class="stem">顶层题目：3 的平方是多少？</div>
+  <label class="opt"><input type="radio" name="tq" value="A" /> A. 6</label>
+  <label class="opt"><input type="radio" name="tq" value="B" /> B. 9</label>
+</div>
+
+<script>
+  window.__frameTest = { ready: true, iframes: document.querySelectorAll('iframe').length };
+</script>
+</body>
+</html>
