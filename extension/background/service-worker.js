@@ -93,6 +93,10 @@ importScripts(
     };
 
     switch (msg.type) {
+      case 'DATI_RULE_PREVIEW':
+        if (!isTabId(tabId) || sender.id !== chrome.runtime.id) { reply({ok:false}); return false; }
+        chrome.scripting.executeScript({target:{tabId:tabId,allFrames:true},func:function(rule){return globalThis.AD && AD.RuleEditor ? AD.RuleEditor.paint(rule) : 0;},args:[msg.rule || null]}).then(function(frames){reply({ok:true,count:frames.reduce(function(n,f){return n+(f.result||0);},0)});}).catch(function(){reply({ok:false});});
+        return true;
       case 'DATI_NAV_STATUS':
         if (sender.id !== chrome.runtime.id || sender.tab || !String(sender.url || '').startsWith(chrome.runtime.getURL('ui/'))) { reply({ok:false}); return false; }
         chrome.tabs.query({active:true,lastFocusedWindow:true}).then(async function (tabs) {
@@ -489,7 +493,7 @@ importScripts(
                 'common/protocol.js', 'common/settings.js',
                 'content/presets.js', 'content/detector.js', 'content/filler.js',
                 'content/overlay.js', 'content/frame.js', 'content/picker.js',
-                'content/capture.js', 'content/navigation.js', 'content/content.js'
+                'content/capture.js', 'content/navigation.js', 'content/rule-editor.js', 'content/content.js'
               ]
             }, function () {
               if (chrome.runtime.lastError) return;

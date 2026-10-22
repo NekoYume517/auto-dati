@@ -83,11 +83,11 @@ try {
     await until(() => page.evalInExtension('!!globalThis.AD?.App?.state.settings', ID));
     return page;
   }
-  await scenario('wisdom', {}, { enabled: false });
+  await scenario('wisdom');
   await until(() => page.eval('pageIndex===3 && !!document.querySelector("input:checked")'), { timeout: 15000, label: 'three automatic pages' });
   const completed = await page.eval('({page:pageIndex,clicks,submits,badSaves,saved})');
   ok('智慧树相同的下一题按钮结构可连续翻页、识别和填入', completed.page === 3 && completed.clicks === 2 && completed.badSaves === 0);
-  ok('智慧树直接使用站点规则的按钮配置，不借用自定义或全局选择器', await page.evalInExtension('AD.Detector.scan(document,{skipAnswered:false})[0].presetId==="zhihuishu" && AD.Navigation.inspect().navigation[0].selector===AD.Settings.snapshot().detect.siteRules.zhihuishu.nextPageSelector', ID));
+  ok('智慧树结构通过统一规则配置翻页', await page.evalInExtension('AD.Detector.scan(document,{skipAnswered:false})[0].presetId.startsWith("custom:") && AD.Navigation.inspect().navigation[0].selector==="#next"', ID));
   await sleep(900);
   ok('下一题按钮消失后停止，不点击提交作业', await page.eval('clicks===2 && submits===0'));
   ok('翻页中加载占位不会被当题目或重复请求', requests.filter(r => r.includes('第1小题')).length === 3);

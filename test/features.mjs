@@ -37,9 +37,9 @@ try {
   await waitForExtension(PORT, ID, { stderrFn: browser.stderr });
   const options = await open('chrome-extension://' + ID + '/ui/options.html');
   await until(() => options.eval('!!AD.StatisticsClient && document.querySelector("#pModel")'));
-  ok('题目识别只展示智慧树站点预设且默认开启', await options.eval('document.querySelectorAll("[data-preset]").length===0 && document.querySelectorAll("[data-site]").length===1 && document.querySelector("[data-site=zhihuishu]").checked'));
+  ok('题目识别只展示智慧树站点预设且默认开启', await options.eval('document.querySelectorAll("[data-site]").length===0 && AD.Settings.snapshot().detect.customRules.some(r=>r.id==="site-zhihuishu"&&r.enabled)'));
   ok('旧版通用题型配置会被清除', await options.eval('(()=>{const d=AD.Settings.normalize({detect:{presets:{choice:false,generic:true}}}).detect;return !Object.prototype.hasOwnProperty.call(d,"presets")})()'));
-  ok('旧站点预设设置会迁移清理', await options.eval('(()=>{const s=AD.Settings.normalize({detect:{sitePresets:{chaoxing:true,yuketang:true}}}).detect.sitePresets;return Object.keys(s).length===1&&s.zhihuishu===true})()'));
+  ok('旧站点预设设置会迁移清理', await options.eval('(()=>{const s=AD.Settings.normalize({detect:{sitePresets:{chaoxing:true,yuketang:true}}}).detect.sitePresets;return Object.keys(s).length===1&&s.zhihuishu===false})()'));
   ok('设置集中到一个一级入口，包含关于更新的六个二级 Tab', await options.eval('document.querySelector("[data-nav=behavior]").textContent.trim()==="设置" && !document.querySelector("[data-nav=hotkey]") && !document.querySelector("[data-nav=appearance]") && document.querySelectorAll("[data-settings-tab]").length===6'));
   ok('完整设置每个配置仅出现一次，没有工作台重复开关', await options.eval('(()=>{const paths=Array.from(document.querySelectorAll("[data-path]")).map(el=>el.dataset.path);return paths.length===new Set(paths).size})()'));
   await options.eval('document.querySelector("[data-nav=behavior]").click()');

@@ -1,87 +1,80 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>AutoDati · 学习工作台</title>
-<link rel="stylesheet" href="../common/theme.css">
-<link rel="stylesheet" href="options.css">
+<link href="../common/theme.css" rel="stylesheet"/>
+<link href="options.css" rel="stylesheet"/>
 </head>
 <body class="dati-root" data-theme="dark">
-
 <div class="app">
-
-  <!-- ============================== 侧边栏 ============================== -->
-  <aside class="sidebar">
-    <div class="brand">
-      <span class="brand__mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 7.5h9M4 12h6M4 16.5h4"/>
-          <path d="m14.5 15.2 2.2 2.3 4.3-4.6"/>
-        </svg>
-      </span>
-      <span class="brand__text">
-        <strong>AutoDati</strong>
-        <small>自动答题助手</small>
-      </span>
-      <span class="brand__ver" id="brandVersion">v0.1.0</span>
-    </div>
-
-    <nav class="nav" id="nav" aria-label="设置分区"><div class="nav__label">工作空间</div>
-      <button class="nav__item is-active" data-nav="overview" aria-current="page" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>
-        <span>工作台</span>
-      </button>
-      <button class="nav__item" data-nav="api" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z"/></svg>
-        <span>模型 API</span>
-        <em class="nav__tag" id="navApiTag">!</em>
-      </button>
-      <button class="nav__item" data-nav="prompt" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.2 9.2 0 0 1-3.4-.6L3 21l1.7-5.1A8.2 8.2 0 0 1 4 11.5 8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5Z"/><path d="M8.5 10h7M8.5 13.5h4.5"/></svg>
-        <span>提示词</span>
-      </button>
-      <button class="nav__item" data-nav="detect" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5.5A2.5 2.5 0 0 1 5.5 3H8M16 3h2.5A2.5 2.5 0 0 1 21 5.5V8M21 16v2.5A2.5 2.5 0 0 1 18.5 21H16M8 21H5.5A2.5 2.5 0 0 1 3 18.5V16"/><circle cx="12" cy="12" r="2.6"/></svg>
-        <span>站点与答题规则</span>
-      </button>
-      <button class="nav__item" data-nav="behavior" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21v-7M5 10V3M12 21v-9M12 8V3M19 21v-5M19 12V3"/><path d="M2.5 14h5M9.5 8h5M16.5 16h5"/></svg>
-        <span>设置</span>
-      </button>
-      
-      <button class="nav__item" data-nav="statistics" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v17h17M8 15v-4M13 15V6M18 15V9"/></svg>
-        <span>统计数据</span>
-      </button>
-      <div class="nav__label">偏好与管理</div>
-      
-      <button class="nav__item" data-nav="data" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/><path d="M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
-        <span>数据</span>
-      </button>
-    </nav>
-
-    <div class="sidebar-note"><strong>专注学习，轻松作答。</strong>题目识别与答案预览各就其位，始终由你掌握作答节奏。</div>
-    <div class="sidebar__foot">
-      <div class="save-state" id="saveState">
-        <span class="save-state__dot"></span>
-        <span class="save-state__text">已加载</span>
-      </div>
-      <div class="sidebar__meta">
-        <span>协议 v<span id="metaProtocol">1</span></span>
-        <span class="dati-divider dati-divider--v"></span>
-        <span id="metaEnv">本地预览</span>
-      </div>
-    </div>
-  </aside>
-
-  <!-- ============================== 主区域 ============================== -->
-  <header class="workspace-bar"><div class="workspace-crumb"><span>AutoDati</span><span aria-hidden="true">/</span><strong id="currentSection">学习工作台</strong></div><div class="workspace-actions"><span class="workspace-status">更改自动保存</span><button class="dati-btn dati-btn--ghost" type="button" data-goto="api">管理模型 <span aria-hidden="true">↗</span></button></div></header>
-  <main class="main dati-scroll" id="main"><nav class="settings-tabs" id="settingsTabs" role="tablist" aria-label="设置分类" hidden><button type="button" role="tab" id="settings-tab-behavior" aria-controls="settings-panel-behavior" aria-selected="false" data-settings-tab="behavior">常规</button><button type="button" role="tab" id="settings-tab-feedback" aria-controls="settings-panel-feedback" aria-selected="false" data-settings-tab="feedback">弹窗设置</button><button type="button" role="tab" id="settings-tab-hotkey" aria-controls="settings-panel-hotkey" aria-selected="false" data-settings-tab="hotkey">截图与快捷键</button><button type="button" role="tab" id="settings-tab-appearance" aria-controls="settings-panel-appearance" aria-selected="false" data-settings-tab="appearance">外观</button><button type="button" role="tab" id="settings-tab-advanced" aria-controls="settings-panel-advanced" aria-selected="false" data-settings-tab="advanced">高级</button><button type="button" role="tab" id="settings-tab-updates" aria-controls="settings-panel-updates" aria-selected="false" data-settings-tab="updates">关于与更新</button></nav>
-
-    <!-- ------------------------------ 概览 ------------------------------ -->
-    <section class="view is-active" data-view="overview">
+<!-- ============================== 侧边栏 ============================== -->
+<aside class="sidebar">
+<div class="brand">
+<span aria-hidden="true" class="brand__mark">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24">
+<path d="M4 7.5h9M4 12h6M4 16.5h4"></path>
+<path d="m14.5 15.2 2.2 2.3 4.3-4.6"></path>
+</svg>
+</span>
+<span class="brand__text">
+<strong>AutoDati</strong>
+<small>自动答题助手</small>
+</span>
+<span class="brand__ver" id="brandVersion">v0.1.0</span>
+</div>
+<nav aria-label="设置分区" class="nav" id="nav"><div class="nav__label">工作空间</div>
+<button aria-current="page" class="nav__item is-active" data-nav="overview" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><rect height="7.5" rx="2" width="7.5" x="3" y="3"></rect><rect height="7.5" rx="2" width="7.5" x="13.5" y="3"></rect><rect height="7.5" rx="2" width="7.5" x="3" y="13.5"></rect><rect height="7.5" rx="2" width="7.5" x="13.5" y="13.5"></rect></svg>
+<span>工作台</span>
+</button>
+<button class="nav__item" data-nav="api" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z"></path></svg>
+<span>模型 API</span>
+<em class="nav__tag" id="navApiTag">!</em>
+</button>
+<button class="nav__item" data-nav="prompt" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.2 9.2 0 0 1-3.4-.6L3 21l1.7-5.1A8.2 8.2 0 0 1 4 11.5 8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5Z"></path><path d="M8.5 10h7M8.5 13.5h4.5"></path></svg>
+<span>提示词</span>
+</button>
+<button class="nav__item" data-nav="detect" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M3 8V5.5A2.5 2.5 0 0 1 5.5 3H8M16 3h2.5A2.5 2.5 0 0 1 21 5.5V8M21 16v2.5A2.5 2.5 0 0 1 18.5 21H16M8 21H5.5A2.5 2.5 0 0 1 3 18.5V16"></path><circle cx="12" cy="12" r="2.6"></circle></svg>
+<span>站点与答题规则</span>
+</button>
+<button class="nav__item" data-nav="behavior" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M5 21v-7M5 10V3M12 21v-9M12 8V3M19 21v-5M19 12V3"></path><path d="M2.5 14h5M9.5 8h5M16.5 16h5"></path></svg>
+<span>设置</span>
+</button>
+<button class="nav__item" data-nav="statistics" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M4 3v17h17M8 15v-4M13 15V6M18 15V9"></path></svg>
+<span>统计数据</span>
+</button>
+<div class="nav__label">偏好与管理</div>
+<button class="nav__item" data-nav="data" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3"></ellipse><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path><path d="M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path></svg>
+<span>数据</span>
+</button>
+</nav>
+<div class="sidebar-note"><strong>专注学习，轻松作答。</strong>题目识别与答案预览各就其位，始终由你掌握作答节奏。</div>
+<div class="sidebar__foot">
+<div class="save-state" id="saveState">
+<span class="save-state__dot"></span>
+<span class="save-state__text">已加载</span>
+</div>
+<div class="sidebar__meta">
+<span>协议 v<span id="metaProtocol">1</span></span>
+<span class="dati-divider dati-divider--v"></span>
+<span id="metaEnv">本地预览</span>
+</div>
+</div>
+</aside>
+<!-- ============================== 主区域 ============================== -->
+<header class="workspace-bar"><div class="workspace-crumb"><span>AutoDati</span><span aria-hidden="true">/</span><strong id="currentSection">学习工作台</strong></div><div class="workspace-actions"><span class="workspace-status">更改自动保存</span><button class="dati-btn dati-btn--ghost" data-goto="api" type="button">管理模型 <span aria-hidden="true">↗</span></button></div></header>
+<main class="main dati-scroll" id="main"><nav aria-label="设置分类" class="settings-tabs" hidden="" id="settingsTabs" role="tablist"><button aria-controls="settings-panel-behavior" aria-selected="false" data-settings-tab="behavior" id="settings-tab-behavior" role="tab" type="button">常规</button><button aria-controls="settings-panel-feedback" aria-selected="false" data-settings-tab="feedback" id="settings-tab-feedback" role="tab" type="button">弹窗设置</button><button aria-controls="settings-panel-hotkey" aria-selected="false" data-settings-tab="hotkey" id="settings-tab-hotkey" role="tab" type="button">截图与快捷键</button><button aria-controls="settings-panel-appearance" aria-selected="false" data-settings-tab="appearance" id="settings-tab-appearance" role="tab" type="button">外观</button><button aria-controls="settings-panel-advanced" aria-selected="false" data-settings-tab="advanced" id="settings-tab-advanced" role="tab" type="button">高级</button><button aria-controls="settings-panel-updates" aria-selected="false" data-settings-tab="updates" id="settings-tab-updates" role="tab" type="button">关于与更新</button></nav>
+<!-- ------------------------------ 概览 ------------------------------ -->
+<section class="view is-active" data-view="overview">
 <header class="view-head">
 <h1>学习工作台</h1>
 <p>一处管理模型、识别规则与作答方式。专注于题目，其余交给 AutoDati。</p>
@@ -157,252 +150,218 @@
 </div>
 </div>
 </section>
-
-    <!-- ------------------------------ 模型 API ------------------------------ -->
-    <section class="view" data-view="api">
-      <header class="view-head">
-        <h1>模型 API</h1>
-        <p>支持 OpenAI Chat / Responses、Anthropic Messages 与 Gemini GenerateContent 四种协议。</p>
-      </header>
-
-      <div class="split">
-        <div class="dati-card provider-list">
-          <div class="provider-list__head">
-            <h3 class="dati-card__title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0V8ZM12 17v4"/></svg>
+<!-- ------------------------------ 模型 API ------------------------------ -->
+<section class="view" data-view="api">
+<header class="view-head">
+<h1>模型 API</h1>
+<p>支持 OpenAI Chat / Responses、Anthropic Messages 与 Gemini GenerateContent 四种协议。</p>
+</header>
+<div class="split">
+<div class="dati-card provider-list">
+<div class="provider-list__head">
+<h3 class="dati-card__title">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0V8ZM12 17v4"></path></svg>
               连接配置
             </h3>
-            <button class="dati-btn dati-btn--sm dati-btn--icon" type="button" id="btnAddProvider" title="新增配置">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
-          </div>
-          <div class="provider-list__items dati-scroll" id="providerList"></div>
-          <p class="dati-hint">点击条目切换当前使用的配置。</p>
-        </div>
-
-        <div class="dati-card provider-editor">
-          <h3 class="dati-card__title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg>
+<button class="dati-btn dati-btn--sm dati-btn--icon" id="btnAddProvider" title="新增配置" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+</button>
+</div>
+<div class="provider-list__items dati-scroll" id="providerList"></div>
+<p class="dati-hint">点击条目切换当前使用的配置。</p>
+</div>
+<div class="dati-card provider-editor">
+<h3 class="dati-card__title">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"></path></svg>
             编辑配置
             <span class="dati-card__aside" id="editorIdLabel"></span>
-          </h3>
-
-          <div class="form-grid">
-            <div class="dati-field">
-              <label class="dati-label" for="pName">配置名称</label>
-              <input class="dati-input" id="pName" type="text" data-prop="name" placeholder="例如：主力模型">
-            </div>
-            <div class="dati-field">
-              <label class="dati-label" for="pFormat">接口格式</label>
-              <select class="dati-select" id="pFormat" data-prop="format">
-                <option value="openai-chat">Chat Completions（OpenAI 兼容）</option>
-                <option value="openai-responses">Responses API（OpenAI）</option>
-                <option value="anthropic">Claude Messages（Anthropic）</option>
-                <option value="gemini">Gemini GenerateContent</option>
-              </select>
-            </div>
-
-            <div class="dati-field form-grid__full">
-              <label class="dati-label" for="pBaseUrl">Base URL</label>
-              <input class="dati-input dati-input--mono" id="pBaseUrl" type="text" data-prop="baseUrl" placeholder="https://api.openai.com/v1" spellcheck="false">
-              <span class="dati-hint" id="pBaseHint">不含结尾斜杠；格式默认值会自动提示。</span>
-            </div>
-
-            <div class="dati-field">
-              <label class="dati-label" for="pPath">请求路径 <span class="dati-badge">可留空</span></label>
-              <input class="dati-input dati-input--mono" id="pPath" type="text" data-prop="path" placeholder="/chat/completions" spellcheck="false">
-            </div>
-            <div class="dati-field">
-              <label class="dati-label" for="pModel">模型</label>
-              <input class="dati-input dati-input--mono" id="pModel" type="text" data-prop="model" list="modelList" placeholder="gpt-4o-mini" spellcheck="false">
-              <button class="dati-btn dati-btn--sm model-fetch" type="button" id="btnFetchModels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-4-4 4 4 4-4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>从供应商获取模型</button>
-              <datalist id="modelList"></datalist>
-              <div class="model-chips" id="modelChips"></div>
-            </div>
-
-            <div class="dati-field form-grid__full">
-              <label class="dati-label" for="pApiKey">
+</h3>
+<div class="form-grid">
+<div class="dati-field">
+<label class="dati-label" for="pName">配置名称</label>
+<input class="dati-input" data-prop="name" id="pName" placeholder="例如：主力模型" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="pFormat">接口格式</label>
+<select class="dati-select" data-prop="format" id="pFormat">
+<option value="openai-chat">Chat Completions（OpenAI 兼容）</option>
+<option value="openai-responses">Responses API（OpenAI）</option>
+<option value="anthropic">Claude Messages（Anthropic）</option>
+<option value="gemini">Gemini GenerateContent</option>
+</select>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="pBaseUrl">Base URL</label>
+<input class="dati-input dati-input--mono" data-prop="baseUrl" id="pBaseUrl" placeholder="https://api.openai.com/v1" spellcheck="false" type="text"/>
+<span class="dati-hint" id="pBaseHint">不含结尾斜杠；格式默认值会自动提示。</span>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="pPath">请求路径 <span class="dati-badge">可留空</span></label>
+<input class="dati-input dati-input--mono" data-prop="path" id="pPath" placeholder="/chat/completions" spellcheck="false" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="pModel">模型</label>
+<input class="dati-input dati-input--mono" data-prop="model" id="pModel" list="modelList" placeholder="gpt-4o-mini" spellcheck="false" type="text"/>
+<button class="dati-btn dati-btn--sm model-fetch" id="btnFetchModels" type="button"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>从供应商获取模型</button>
+<datalist id="modelList"></datalist>
+<div class="model-chips" id="modelChips"></div>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="pApiKey">
                 API Key
-                <button class="key-toggle" type="button" id="btnToggleKey" title="显示 / 隐藏">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>
-                </button>
-              </label>
-              <input class="dati-input dati-input--mono" id="pApiKey" type="password" data-prop="apiKey" placeholder="sk-…" spellcheck="false" autocomplete="off">
-              <span class="dati-hint">密钥仅保存在本地 <code>chrome.storage.local</code>，不会上传到第三方。</span>
-            </div>
-
-            <div class="dati-field">
-              <label class="dati-label" for="pTemp">温度 <output class="field-value" id="pTempOut">0.20</output></label>
-              <input type="range" id="pTemp" min="0" max="2" step="0.05" data-prop="temperature" value="0.2">
-            </div>
-            <div class="dati-field">
-              <label class="dati-label" for="pMaxTokens">最大输出 Token</label>
-              <input class="dati-input" id="pMaxTokens" type="number" min="64" max="32768" step="64" data-prop="maxTokens">
-            </div>
-
-            <div class="dati-field">
-              <label class="dati-label" for="pTimeout">请求超时</label>
-              <div class="input-unit">
-                <input class="dati-input" id="pTimeout" type="number" min="5000" max="600000" step="1000" data-prop="timeoutMs">
-                <span class="input-unit__suffix">ms</span>
-              </div>
-            </div>
-            <div class="dati-field">
-              <span class="dati-label">能力</span>
-              <div class="switch-inline">
-                <label class="dati-switch"><input type="checkbox" data-prop="stream"> 流式</label>
-                <label class="dati-switch"><input type="checkbox" data-prop="vision"> 图片输入</label>
-              </div>
-            </div>
-
-            <div class="dati-field form-grid__full">
-              <label class="dati-label" for="pReasoning">思考模式（推理模型）</label>
-              <select class="dati-select" id="pReasoning" data-prop="reasoning">
-                <option value="auto">跟随模型默认</option>
-                <option value="off">关闭思考（更快更省）</option>
-                <option value="on">开启思考（更准更慢）</option>
-              </select>
-              <span class="dati-hint" id="pReasoningHint">对 DeepSeek-R1 / GLM / Qwen3 / o 系 / Gemini 2.5 / Claude 3.7+ 等推理模型生效；普通模型忽略此设置。DeepSeek-R1 官方暂不支持关闭。</span>
-            </div>
-
-            <div class="dati-field form-grid__full">
-              <label class="dati-label" for="pHeaders">附加请求头 <span class="dati-badge">JSON</span></label>
-              <textarea class="dati-textarea dati-textarea--mono" id="pHeaders" data-prop="extraHeaders" rows="3" spellcheck="false" placeholder='{ "X-Title": "AutoDati" }'></textarea>
-              <span class="dati-hint" id="pHeadersHint">键值对对象，会合并到请求头。</span>
-            </div>
-
-            <div class="dati-field form-grid__full">
-              <label class="dati-label" for="pBody">附加 Body <span class="dati-badge">JSON</span></label>
-              <textarea class="dati-textarea dati-textarea--mono" id="pBody" data-prop="extraBody" rows="3" spellcheck="false" placeholder='{ "top_p": 0.9 }'></textarea>
-              <span class="dati-hint" id="pBodyHint">键值对对象，会合并到请求体。</span>
-            </div>
-          </div>
-
-          <div class="test-bar">
-            <button class="dati-btn dati-btn--primary" type="button" id="btnTest">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.5V12a10 10 0 1 1-5.9-9.1"/><path d="m9 11.5 3 3L22 4.5"/></svg>
+                <button class="key-toggle" id="btnToggleKey" title="显示 / 隐藏" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>
+</button>
+</label>
+<input autocomplete="off" class="dati-input dati-input--mono" data-prop="apiKey" id="pApiKey" placeholder="sk-…" spellcheck="false" type="password"/>
+<span class="dati-hint">密钥仅保存在本地 <code>chrome.storage.local</code>，不会上传到第三方。</span>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="pTemp">温度 <output class="field-value" id="pTempOut">0.20</output></label>
+<input data-prop="temperature" id="pTemp" max="2" min="0" step="0.05" type="range" value="0.2"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="pMaxTokens">最大输出 Token</label>
+<input class="dati-input" data-prop="maxTokens" id="pMaxTokens" max="32768" min="64" step="64" type="number"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="pTimeout">请求超时</label>
+<div class="input-unit">
+<input class="dati-input" data-prop="timeoutMs" id="pTimeout" max="600000" min="5000" step="1000" type="number"/>
+<span class="input-unit__suffix">ms</span>
+</div>
+</div>
+<div class="dati-field">
+<span class="dati-label">能力</span>
+<div class="switch-inline">
+<label class="dati-switch"><input data-prop="stream" type="checkbox"/> 流式</label>
+<label class="dati-switch"><input data-prop="vision" type="checkbox"/> 图片输入</label>
+</div>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="pReasoning">思考模式（推理模型）</label>
+<select class="dati-select" data-prop="reasoning" id="pReasoning">
+<option value="auto">跟随模型默认</option>
+<option value="off">关闭思考（更快更省）</option>
+<option value="on">开启思考（更准更慢）</option>
+</select>
+<span class="dati-hint" id="pReasoningHint">对 DeepSeek-R1 / GLM / Qwen3 / o 系 / Gemini 2.5 / Claude 3.7+ 等推理模型生效；普通模型忽略此设置。DeepSeek-R1 官方暂不支持关闭。</span>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="pHeaders">附加请求头 <span class="dati-badge">JSON</span></label>
+<textarea class="dati-textarea dati-textarea--mono" data-prop="extraHeaders" id="pHeaders" placeholder='{ "X-Title": "AutoDati" }' rows="3" spellcheck="false"></textarea>
+<span class="dati-hint" id="pHeadersHint">键值对对象，会合并到请求头。</span>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="pBody">附加 Body <span class="dati-badge">JSON</span></label>
+<textarea class="dati-textarea dati-textarea--mono" data-prop="extraBody" id="pBody" placeholder='{ "top_p": 0.9 }' rows="3" spellcheck="false"></textarea>
+<span class="dati-hint" id="pBodyHint">键值对对象，会合并到请求体。</span>
+</div>
+</div>
+<div class="test-bar">
+<button class="dati-btn dati-btn--primary" id="btnTest" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M22 11.5V12a10 10 0 1 1-5.9-9.1"></path><path d="m9 11.5 3 3L22 4.5"></path></svg>
               测试连接
             </button>
-            <div class="test-result" id="testResult">
-              <span class="dati-hint">尚未测试。将发送一条极短的问候请求。</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ------------------------------ 提示词 ------------------------------ -->
-    <section class="view" data-view="prompt">
-      <header class="view-head">
-        <h1>提示词</h1>
-        <p>控制模型的身份、输出语言与题型专用提示。</p>
-      </header>
-
-      <div class="dati-card">
-        <h3 class="dati-card__title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 10h10M4 15h16M4 20h7"/></svg>
+<div class="test-result" id="testResult">
+<span class="dati-hint">尚未测试。将发送一条极短的问候请求。</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ------------------------------ 提示词 ------------------------------ -->
+<section class="view" data-view="prompt">
+<header class="view-head">
+<h1>提示词</h1>
+<p>控制模型的身份、输出语言与题型专用提示。</p>
+</header>
+<div class="dati-card">
+<h3 class="dati-card__title">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M4 5h16M4 10h10M4 15h16M4 20h7"></path></svg>
           提示词配置
           <span class="dati-card__aside">
-            <div class="dati-tabs" id="promptTabs">
-              <button class="dati-tab is-active" type="button" data-ptab="general">通用</button>
-              <button class="dati-tab" type="button" data-ptab="kinds">题型专用</button>
-            </div>
-          </span>
-        </h3>
-
-        <div class="ptab is-active" data-ptab-panel="general">
-          <div class="dati-field">
-            <label class="dati-label" for="promptSystem">系统提示词</label>
-            <textarea class="dati-textarea" id="promptSystem" data-path="prompt.system" rows="7" spellcheck="false"></textarea>
-            <span class="dati-hint">会作为 system 消息发送。建议保留「直接给出答案」的约束，避免模型复述题目。</span>
-          </div>
-          <div class="form-grid">
-            <div class="dati-field">
-              <label class="dati-label" for="promptLanguage">输出语言</label>
-              <select class="dati-select" id="promptLanguage" data-path="prompt.language">
-                <option value="auto">跟随题目</option>
-                <option value="zh">始终中文</option>
-                <option value="en">始终英文</option>
-              </select>
-            </div>
-            <div class="dati-field">
-              <span class="dati-label">附加说明</span>
-              <label class="dati-switch"><input type="checkbox" data-path="prompt.includeExplain"> 附带简要解析</label>
-            </div>
-            <div class="dati-field form-grid__full">
-              <label class="dati-label" for="promptExtra">额外指令</label>
-              <textarea class="dati-textarea" id="promptExtra" data-path="prompt.extraInstruction" rows="3" spellcheck="false" placeholder="例如：多选只输出字母，用逗号分隔。"></textarea>
-            </div>
-            <div class="dati-field form-grid__full">
-              <label class="dati-label" for="promptImage">截图答题指令</label>
-              <input class="dati-input" id="promptImage" type="text" data-path="prompt.imageInstruction">
-            </div>
-          </div>
-        </div>
-
-        <div class="ptab" data-ptab-panel="kinds">
-          <p class="dati-hint">按题型追加到用户消息末尾，留空则不追加。</p>
-          <div class="form-grid">
-            <div class="dati-field">
-              <label class="dati-label" for="hintChoice">单选题</label>
-              <input class="dati-input" id="hintChoice" type="text" data-path="prompt.kindHint.choice" placeholder="只输出选项字母，例如 B">
-            </div>
-            <div class="dati-field">
-              <label class="dati-label" for="hintMulti">多选题</label>
-              <input class="dati-input" id="hintMulti" type="text" data-path="prompt.kindHint.multi" placeholder="输出所有正确字母，例如 A,C,D">
-            </div>
-            <div class="dati-field">
-              <label class="dati-label" for="hintJudge">判断题</label>
-              <input class="dati-input" id="hintJudge" type="text" data-path="prompt.kindHint.judge" placeholder="只输出「正确」或「错误」">
-            </div>
-            <div class="dati-field">
-              <label class="dati-label" for="hintBlank">填空题</label>
-              <input class="dati-input" id="hintBlank" type="text" data-path="prompt.kindHint.blank" placeholder="每个空一行，只写内容">
-            </div>
-            <div class="dati-field">
-              <label class="dati-label" for="hintQa">问答 / 大题</label>
-              <input class="dati-input" id="hintQa" type="text" data-path="prompt.kindHint.qa" placeholder="分点简答，控制在 200 字内">
-            </div>
-            <div class="dati-field">
-              <label class="dati-label" for="hintGeneric">通用表单</label>
-              <input class="dati-input" id="hintGeneric" type="text" data-path="prompt.kindHint.generic" placeholder="按字段顺序逐行输出">
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ------------------------------ 题目识别 ------------------------------ -->
-    <section class="view" data-view="detect">
+<div class="dati-tabs" id="promptTabs">
+<button class="dati-tab is-active" data-ptab="general" type="button">通用</button>
+<button class="dati-tab" data-ptab="kinds" type="button">题型专用</button>
+</div>
+</span>
+</h3>
+<div class="ptab is-active" data-ptab-panel="general">
+<div class="dati-field">
+<label class="dati-label" for="promptSystem">系统提示词</label>
+<textarea class="dati-textarea" data-path="prompt.system" id="promptSystem" rows="7" spellcheck="false"></textarea>
+<span class="dati-hint">会作为 system 消息发送。建议保留「直接给出答案」的约束，避免模型复述题目。</span>
+</div>
+<div class="form-grid">
+<div class="dati-field">
+<label class="dati-label" for="promptLanguage">输出语言</label>
+<select class="dati-select" data-path="prompt.language" id="promptLanguage">
+<option value="auto">跟随题目</option>
+<option value="zh">始终中文</option>
+<option value="en">始终英文</option>
+</select>
+</div>
+<div class="dati-field">
+<span class="dati-label">附加说明</span>
+<label class="dati-switch"><input data-path="prompt.includeExplain" type="checkbox"/> 附带简要解析</label>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="promptExtra">额外指令</label>
+<textarea class="dati-textarea" data-path="prompt.extraInstruction" id="promptExtra" placeholder="例如：多选只输出字母，用逗号分隔。" rows="3" spellcheck="false"></textarea>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="promptImage">截图答题指令</label>
+<input class="dati-input" data-path="prompt.imageInstruction" id="promptImage" type="text"/>
+</div>
+</div>
+</div>
+<div class="ptab" data-ptab-panel="kinds">
+<p class="dati-hint">按题型追加到用户消息末尾，留空则不追加。</p>
+<div class="form-grid">
+<div class="dati-field">
+<label class="dati-label" for="hintChoice">单选题</label>
+<input class="dati-input" data-path="prompt.kindHint.choice" id="hintChoice" placeholder="只输出选项字母，例如 B" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="hintMulti">多选题</label>
+<input class="dati-input" data-path="prompt.kindHint.multi" id="hintMulti" placeholder="输出所有正确字母，例如 A,C,D" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="hintJudge">判断题</label>
+<input class="dati-input" data-path="prompt.kindHint.judge" id="hintJudge" placeholder="只输出「正确」或「错误」" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="hintBlank">填空题</label>
+<input class="dati-input" data-path="prompt.kindHint.blank" id="hintBlank" placeholder="每个空一行，只写内容" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="hintQa">问答 / 大题</label>
+<input class="dati-input" data-path="prompt.kindHint.qa" id="hintQa" placeholder="分点简答，控制在 200 字内" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="hintGeneric">通用表单</label>
+<input class="dati-input" data-path="prompt.kindHint.generic" id="hintGeneric" placeholder="按字段顺序逐行输出" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ------------------------------ 题目识别 ------------------------------ -->
+<section class="view" data-view="detect">
 <header class="view-head">
 <h1>站点与答题规则</h1>
 <p>每条规则统一管理题目识别与下一页按钮；仅在命中规则时自动翻页。</p>
 </header>
 <div class="dati-card">
 <h3 class="dati-card__title">
-<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3.5 9h17M3.5 15h17M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"></path></svg>
-          站点预设
-          <span class="dati-card__aside" id="siteCount">0 已启用</span>
-</h3>
-<p class="dati-hint">站点预设仅在对应域名生效；当前默认启用智慧树，其他站点规则会逐步补充。</p>
-<div class="site-grid">
-<label class="site-card"><input data-site="zhihuishu" type="checkbox"/><span class="site-card__name">智慧树</span><span class="site-card__desc">在线学堂</span></label>
-</div>
-<details class="settings-details site-rule-editor">
-<summary>智慧树规则 · 下一题按钮</summary>
-<div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">允许此规则自动翻页</span><span class="switch-row__desc">需要同时开启“自动化 → 自动点击下一页”。</span></div><label class="dati-switch"><input data-path="detect.siteRules.zhihuishu.nextPageEnabled" type="checkbox"/></label></div>
-<div class="dati-field"><label class="dati-label" for="wisdomNextPage">下一题按钮选择器</label><input class="dati-input dati-input--mono" data-path="detect.siteRules.zhihuishu.nextPageSelector" id="wisdomNextPage" spellcheck="false"/><span class="dati-hint">在智慧树规则命中题目时生效，可以编辑适配页面结构。</span></div>
-</details>
-</div>
-<div class="dati-card">
-<h3 class="dati-card__title">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path><path d="m15 9 3 3-3 3"></path></svg>
-          自定义站点规则
+          规则列表
           <span class="dati-card__aside"><button class="dati-btn dati-btn--sm" id="btnExportRules" type="button">导出编码</button> <button class="dati-btn dati-btn--sm" id="btnToggleRuleImport" type="button">粘贴导入</button> <button class="dati-btn dati-btn--primary dati-btn--sm" id="btnAddRule" type="button">新增规则</button></span>
 </h3>
 <div class="rule-list" id="ruleList"></div>
 <div class="dati-field is-hidden" id="ruleTransfer">
-<label class="dati-label" for="ruleTransferText">自定义规则编码（Base64）</label>
+<label class="dati-label" for="ruleTransferText">规则编码（Base64）</label>
 <textarea class="dati-textarea dati-textarea--mono" id="ruleTransferText" placeholder="粘贴 AutoDati 导出的 Base64 编码，或点击「导出编码」生成" rows="4" spellcheck="false"></textarea>
 <div class="row-actions">
 <span class="dati-hint" id="ruleTransferStatus">导入会合并规则；已存在的规则 ID 会跳过。</span>
@@ -411,62 +370,8 @@
 <button class="dati-btn dati-btn--primary dati-btn--sm" id="btnApplyRules" type="button">导入规则</button>
 </div>
 </div>
-<div class="rule-editor is-hidden" id="ruleEditor">
-<hr class="dati-divider"/>
-<div class="form-grid">
-<div class="dati-field">
-<label class="dati-label" for="ruleName">规则名称</label>
-<input class="dati-input" id="ruleName" placeholder="例如：某站点作业" type="text"/>
 </div>
-<div class="dati-field">
-<label class="dati-label" for="ruleKind">题型</label>
-<select class="dati-select" id="ruleKind">
-<option value="auto">自动判断</option>
-<option value="choice">单选题</option>
-<option value="multi">多选题</option>
-<option value="judge">判断题</option>
-<option value="blank">填空题</option>
-<option value="qa">问答 / 大题</option>
-<option value="generic">通用表单</option>
-</select>
-</div>
-<div class="dati-field form-grid__full">
-<label class="dati-label" for="ruleRoot">题块容器选择器</label>
-<input class="dati-input dati-input--mono" id="ruleRoot" placeholder=".question-item" spellcheck="false" type="text"/>
-</div>
-<div class="dati-field form-grid__full">
-<label class="dati-label" for="ruleStem">题干选择器</label>
-<input class="dati-input dati-input--mono" id="ruleStem" placeholder=".question-title" spellcheck="false" type="text"/>
-</div>
-<div class="dati-field">
-<label class="dati-label" for="ruleOption">选项选择器</label>
-<input class="dati-input dati-input--mono" id="ruleOption" placeholder=".option" spellcheck="false" type="text"/>
-</div>
-<div class="dati-field">
-<label class="dati-label" for="ruleInput">输入框选择器</label>
-<input class="dati-input dati-input--mono" id="ruleInput" placeholder="input.blank" spellcheck="false" type="text"/>
-</div>
-<div class="dati-field form-grid__full">
-<label class="dati-label" for="ruleDomains">生效域名 <span class="dati-badge">可选</span></label>
-<input class="dati-input dati-input--mono" id="ruleDomains" placeholder="example.com, exam.other.cn（多个用逗号或换行分隔，留空=全部站点）" spellcheck="false" type="text"/>
-<span class="dati-hint">自动匹配子域；也可填 <code>*.example.com</code>（仅子域）、完整 URL 前缀或 <code>/正则/</code>。</span>
-</div>
-<div class="dati-field form-grid__full">
-<label class="dati-label" for="ruleNextPage">下一页按钮选择器</label>
-<input class="dati-input dati-input--mono" id="ruleNextPage" placeholder="例如 .pagination button.next；留空则此规则不翻页" spellcheck="false" type="text"/>
-<label><input checked="" id="ruleNextPageEnabled" type="checkbox"/> 允许此规则自动翻页</label>
-<span class="dati-hint">仅在此规则命中题目且自动翻页总开关开启时生效；随规则一起导入、导出。</span>
-</div>
-</div>
-<div class="rule-editor__foot">
-<label class="dati-switch"><input checked="" id="ruleEnabled" type="checkbox"/> 启用此规则</label>
-<span class="spacer"></span>
-<button class="dati-btn dati-btn--ghost dati-btn--sm" id="btnRuleCancel" type="button">取消</button>
-<button class="dati-btn dati-btn--primary dati-btn--sm" id="btnRuleSave" type="button">保存规则</button>
-</div>
-</div>
-</div>
-</section><section class="view" data-view="advanced" id="settings-panel-advanced" role="tabpanel" aria-labelledby="settings-tab-advanced"><header class="view-head"><h1>高级</h1><p>识别兼容、扫描频率和调试选项。通常保持默认即可。</p></header><details class="settings-details dati-card"><summary>高级识别与扫描</summary><div class="settings-details__body"><div class="dati-card">
+</section><section aria-labelledby="settings-tab-advanced" class="view" data-view="advanced" id="settings-panel-advanced" role="tabpanel"><header class="view-head"><h1>高级</h1><p>识别兼容、扫描频率和调试选项。通常保持默认即可。</p></header><details class="settings-details dati-card"><summary>高级识别与扫描</summary><div class="settings-details__body"><div class="dati-card">
 <h3 class="dati-card__title">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.6-3.6"></path></svg>
           扫描范围
@@ -551,9 +456,8 @@
 </div>
 <label class="dati-switch"><input data-path="advanced.log" type="checkbox"/></label>
 </div></div></details></section>
-
-    <!-- ------------------------------ 模式与行为 ------------------------------ -->
-    <section class="view" data-view="behavior" id="settings-panel-behavior" role="tabpanel" aria-labelledby="settings-tab-behavior">
+<!-- ------------------------------ 模式与行为 ------------------------------ -->
+<section aria-labelledby="settings-tab-behavior" class="view" data-view="behavior" id="settings-panel-behavior" role="tabpanel">
 <header class="view-head">
 <h1>常规</h1>
 <p>自动弹窗、自动答题和自动翻页在这里统一控制。下一页按钮位置在站点规则中配置。</p>
@@ -636,16 +540,14 @@
 <label class="dati-switch"><input data-path="mode.highlightNextPage" type="checkbox"/></label>
 </div></div>
 </div></section>
-
-    <!-- ------------------------------ 快捷键 ------------------------------ -->
-    <section class="view" data-view="hotkey" id="settings-panel-hotkey" role="tabpanel" aria-labelledby="settings-tab-hotkey">
+<!-- ------------------------------ 快捷键 ------------------------------ -->
+<section aria-labelledby="settings-tab-hotkey" class="view" data-view="hotkey" id="settings-panel-hotkey" role="tabpanel">
 <header class="view-head">
 <h1>截图与快捷键</h1>
 <p>页面内快捷键由扩展直接监听；浏览器级命令可在扩展快捷键页面修改。</p>
 </header><div class="dati-card">
 <h3 class="dati-card__title">截图搜题</h3>
 <div class="switch-list">
-
 <div class="switch-row">
 <div class="switch-row__main">
 <span class="switch-row__name">区域框选</span>
@@ -758,9 +660,8 @@
 </div>
 </div>
 </section>
-
-    <!-- ------------------------------ 外观 ------------------------------ -->
-    <section aria-labelledby="settings-tab-appearance" class="view" data-view="appearance" id="settings-panel-appearance" role="tabpanel">
+<!-- ------------------------------ 外观 ------------------------------ -->
+<section aria-labelledby="settings-tab-appearance" class="view" data-view="appearance" id="settings-panel-appearance" role="tabpanel">
 <header class="view-head">
 <h1>外观</h1>
 <p>用你习惯的明暗、色彩与密度，布置自己的学习空间。</p>
@@ -810,7 +711,6 @@
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
               尺寸与密度
             </h3>
-
 <div class="slider-field">
 <label class="dati-label" for="uiFontSize">字号 <output class="field-value" id="uiFontSizeOut">13 px</output></label>
 <input id="uiFontSize" max="18" min="11" step="0.5" type="range" value="13"/>
@@ -835,7 +735,6 @@
 <label class="dati-switch"><input data-path="ui.animate" type="checkbox"/></label>
 </div>
 </div>
-
 </div>
 </div>
 <div class="appearance-preview">
@@ -866,106 +765,148 @@
 </div>
 </div>
 </section>
-
-    <!-- ------------------------------ 数据 ------------------------------ -->
-    <section class="view" data-view="statistics">
-      <header class="view-head stats-head"><div><h1>统计数据</h1><p>每一次请求，都有迹可循。查看模型表现与实际 Token 用量。</p></div><div class="stats-controls"><select id="statsPeriod" class="dati-select" aria-label="统计时间范围"><option value="7">最近 7 天</option><option value="30" selected>最近 30 天</option><option value="90">最近 90 天</option><option value="365">最近 365 天</option></select><button type="button" id="btnRefreshStatistics" class="dati-btn">刷新</button></div></header>
-      <div class="stats-kpis">
-        <article class="stats-kpi"><span>请求次数</span><strong id="statsRequests">0</strong><small id="statsUpdated" role="status">本地统计 · 最近 30 天</small></article>
-        <article class="stats-kpi"><span>完成率</span><strong id="statsSuccess">—</strong><small id="statsFailures">0 次失败 · 0 次停止</small></article>
-        <article class="stats-kpi"><span>平均耗时</span><strong id="statsLatency">—</strong><small id="statsFirst">首个响应暂无数据</small></article>
-        <article class="stats-kpi stats-kpi--accent"><span>总 Token</span><strong id="statsTotal">0</strong><small id="statsCoverage">0 / 0 次请求有 Token 用量</small></article>
-      </div>
-      <div class="stats-charts"><article class="dati-card"><div class="stats-chart-head"><h2>请求趋势</h2><span>每日请求 · 次</span></div><div id="statsRequestsChart" class="stats-chart" role="img"></div></article><article class="dati-card"><div class="stats-chart-head"><h2>Token 趋势</h2><span>接口实际用量</span></div><div id="statsTokensChart" class="stats-chart" role="img"></div></article></div>
-      <article class="dati-card"><div class="stats-chart-head"><h2>Token 明细</h2><span>仅累计已返回的指标</span></div><div class="usage-metrics" id="statsMetrics"></div><p class="stats-note">输入包含缓存读取与写入，输出包含推理。子项仅作明细展示，不与输入、输出重复相加。供应商未返回的指标显示「未提供」，缺失请求不会按 0 Token 估算。</p></article>
-      <article class="dati-card"><div class="stats-chart-head"><h2>模型用量</h2><span>按请求次数排序</span></div><div class="stats-table-wrap dati-scroll"><table class="stats-table"><thead><tr><th>模型</th><th>请求</th><th>完成</th><th>总 Token</th><th>平均耗时</th></tr></thead><tbody id="statsModels"></tbody></table></div><p class="stats-note" id="statsKinds">暂无题型记录</p></article>
-      <p class="stats-note">从此版本起记录，保留最近 365 天的本地汇总。统计请求不包含连接测试、模型列表和冷却拦截；不保存题干、答案或密钥。统计数据随备份一起导入和导出。</p>
-    </section>
-
-    <section class="view" data-view="data">
-      <header class="view-head">
-        <h1>数据</h1>
-        <p>备份、迁移与重置全部本地配置。</p>
-      </header>
-
-      <div class="data-grid">
-        <div class="dati-card">
-          <h3 class="dati-card__title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+<!-- ------------------------------ 数据 ------------------------------ -->
+<section class="view" data-view="statistics">
+<header class="view-head stats-head"><div><h1>统计数据</h1><p>每一次请求，都有迹可循。查看模型表现与实际 Token 用量。</p></div><div class="stats-controls"><select aria-label="统计时间范围" class="dati-select" id="statsPeriod"><option value="7">最近 7 天</option><option selected="" value="30">最近 30 天</option><option value="90">最近 90 天</option><option value="365">最近 365 天</option></select><button class="dati-btn" id="btnRefreshStatistics" type="button">刷新</button></div></header>
+<div class="stats-kpis">
+<article class="stats-kpi"><span>请求次数</span><strong id="statsRequests">0</strong><small id="statsUpdated" role="status">本地统计 · 最近 30 天</small></article>
+<article class="stats-kpi"><span>完成率</span><strong id="statsSuccess">—</strong><small id="statsFailures">0 次失败 · 0 次停止</small></article>
+<article class="stats-kpi"><span>平均耗时</span><strong id="statsLatency">—</strong><small id="statsFirst">首个响应暂无数据</small></article>
+<article class="stats-kpi stats-kpi--accent"><span>总 Token</span><strong id="statsTotal">0</strong><small id="statsCoverage">0 / 0 次请求有 Token 用量</small></article>
+</div>
+<div class="stats-charts"><article class="dati-card"><div class="stats-chart-head"><h2>请求趋势</h2><span>每日请求 · 次</span></div><div class="stats-chart" id="statsRequestsChart" role="img"></div></article><article class="dati-card"><div class="stats-chart-head"><h2>Token 趋势</h2><span>接口实际用量</span></div><div class="stats-chart" id="statsTokensChart" role="img"></div></article></div>
+<article class="dati-card"><div class="stats-chart-head"><h2>Token 明细</h2><span>仅累计已返回的指标</span></div><div class="usage-metrics" id="statsMetrics"></div><p class="stats-note">输入包含缓存读取与写入，输出包含推理。子项仅作明细展示，不与输入、输出重复相加。供应商未返回的指标显示「未提供」，缺失请求不会按 0 Token 估算。</p></article>
+<article class="dati-card"><div class="stats-chart-head"><h2>模型用量</h2><span>按请求次数排序</span></div><div class="stats-table-wrap dati-scroll"><table class="stats-table"><thead><tr><th>模型</th><th>请求</th><th>完成</th><th>总 Token</th><th>平均耗时</th></tr></thead><tbody id="statsModels"></tbody></table></div><p class="stats-note" id="statsKinds">暂无题型记录</p></article>
+<p class="stats-note">从此版本起记录，保留最近 365 天的本地汇总。统计请求不包含连接测试、模型列表和冷却拦截；不保存题干、答案或密钥。统计数据随备份一起导入和导出。</p>
+</section>
+<section class="view" data-view="data">
+<header class="view-head">
+<h1>数据</h1>
+<p>备份、迁移与重置全部本地配置。</p>
+</header>
+<div class="data-grid">
+<div class="dati-card">
+<h3 class="dati-card__title">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M12 3v12"></path><path d="m7.5 10.5 4.5 4.5 4.5-4.5"></path><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path></svg>
             导出
           </h3>
-          <p class="dati-hint">将全部设置与统计数据导出为 JSON 文件，包含 API 密钥，请妥善保管。</p>
-          <div class="row-actions">
-            <button class="dati-btn dati-btn--primary" type="button" id="btnExport">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+<p class="dati-hint">将全部设置与统计数据导出为 JSON 文件，包含 API 密钥，请妥善保管。</p>
+<div class="row-actions">
+<button class="dati-btn dati-btn--primary" id="btnExport" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M12 3v12"></path><path d="m7.5 10.5 4.5 4.5 4.5-4.5"></path><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path></svg>
               导出 JSON
             </button>
-          </div>
-        </div>
-
-        <div class="dati-card">
-          <h3 class="dati-card__title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9"/><path d="m7.5 13.5 4.5-4.5 4.5 4.5"/><path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/></svg>
+</div>
+</div>
+<div class="dati-card">
+<h3 class="dati-card__title">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M12 21V9"></path><path d="m7.5 13.5 4.5-4.5 4.5 4.5"></path><path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"></path></svg>
             导入
           </h3>
-          <p class="dati-hint">恢复备份中的设置与统计数据。同一备份重复导入不会累加用量；旧版设置文件保留现有统计。</p>
-          <div class="row-actions">
-            <button class="dati-btn" type="button" id="btnImport">选择文件</button>
-            <input type="file" id="importFile" accept="application/json,.json" class="visually-hidden">
-          </div>
-          <span class="dati-hint" id="importStatus">未选择文件</span>
-        </div>
-
-        <div class="dati-card">
-          <h3 class="dati-card__title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+<p class="dati-hint">恢复备份中的设置与统计数据。同一备份重复导入不会累加用量；旧版设置文件保留现有统计。</p>
+<div class="row-actions">
+<button class="dati-btn" id="btnImport" type="button">选择文件</button>
+<input accept="application/json,.json" class="visually-hidden" id="importFile" type="file"/>
+</div>
+<span class="dati-hint" id="importStatus">未选择文件</span>
+</div>
+<div class="dati-card">
+<h3 class="dati-card__title">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path></svg>
             恢复默认
           </h3>
-          <p class="dati-hint">清空所有自定义配置（含 API 密钥与自定义规则），恢复出厂设置。</p>
-          <div class="row-actions" id="resetActions">
-            <button class="dati-btn dati-btn--danger" type="button" id="btnReset">恢复默认</button>
-          </div>
-        </div>
-
-        <div class="dati-card">
-          <h3 class="dati-card__title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/><path d="M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+<p class="dati-hint">清空所有自定义配置（含 API 密钥与自定义规则），恢复出厂设置。</p>
+<div class="row-actions" id="resetActions">
+<button class="dati-btn dati-btn--danger" id="btnReset" type="button">恢复默认</button>
+</div>
+</div>
+<div class="dati-card">
+<h3 class="dati-card__title">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3"></ellipse><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path><path d="M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path></svg>
             存储信息
           </h3>
-          <dl class="kv">
-            <div><dt>存储键</dt><dd><code>ad_settings</code></dd></div>
-            <div><dt>数据版本</dt><dd id="kvVersion">1</dd></div>
-            <div><dt>序列化大小</dt><dd id="kvSize">—</dd></div>
-            <div><dt>运行环境</dt><dd id="kvEnv">本地预览</dd></div>
-          </dl>
-        </div>
-      </div>
-
-      <div class="dati-card about">
-        <div class="about__mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5h9M4 12h6M4 16.5h4"/><path d="m14.5 15.2 2.2 2.3 4.3-4.6"/></svg>
-        </div>
-        <div class="about__text">
-          <strong>AutoDati · 自动答题助手</strong>
-          <p>版本 <span id="aboutVersion">0.1.0</span> · 协议 <span id="aboutProtocol">1</span> · 全部数据仅保存在本机浏览器，不经过任何中转服务器。</p>
-        </div>
-      </div>
-    </section>
-
-<section class="view" data-view="updates" id="settings-panel-updates" role="tabpanel" aria-labelledby="settings-tab-updates"><header class="view-head"><h1>关于与更新</h1><p>源码与版本发布在 GitHub，下载更新后由你确认安装。</p></header><div class="dati-card"><h3 class="dati-card__title">版本更新</h3><p data-update-status role="status" aria-live="polite">正在读取版本…</p><p class="dati-hint" data-update-time></p><div class="row-actions"><button type="button" class="dati-btn dati-btn--primary" data-update-check>检查更新</button><button type="button" class="dati-btn" data-update-open>GitHub Releases ↗</button></div><div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">自动检查新版本</span><span class="switch-row__desc">每 6 小时检查一次公开 Release，不会自动下载安装。</span></div><label class="dati-switch"><input type="checkbox" data-path="updates.autoCheck"></label></div><p class="dati-hint">CRX 安装受浏览器策略限制。无法安装时，请下载 ZIP，解压后通过开发者模式加载；更新前可在“数据”中备份配置。</p></div><div class="dati-card"><h3 class="dati-card__title">开源项目</h3><p><a href="https://github.com/NekoYume517/auto-dati" target="_blank" rel="noopener noreferrer">NekoYume517/auto-dati ↗</a></p><p class="dati-hint">检查更新仅向 GitHub 请求公开版本信息，不发送题目、答案、供应商密钥或统计数据。</p></div></section>
-  </main>
+<dl class="kv">
+<div><dt>存储键</dt><dd><code>ad_settings</code></dd></div>
+<div><dt>数据版本</dt><dd id="kvVersion">1</dd></div>
+<div><dt>序列化大小</dt><dd id="kvSize">—</dd></div>
+<div><dt>运行环境</dt><dd id="kvEnv">本地预览</dd></div>
+</dl>
 </div>
-
-<dialog class="models-dialog" id="modelsDialog" aria-labelledby="modelsTitle" aria-describedby="modelsSource">
-  <header class="models-dialog__head"><div><span class="models-dialog__eyebrow">模型连接</span><h2 id="modelsTitle">选择模型</h2><p id="modelsSource">从当前供应商获取可用模型</p></div><button class="dati-btn dati-btn--icon" type="button" id="btnCloseModels" aria-label="关闭模型选择">×</button></header>
-  <div class="models-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="modelsSearch" type="search" placeholder="搜索模型名称或 ID…" aria-label="搜索模型" autocomplete="off"></div>
-  <div class="models-dialog__summary"><span id="modelsCount" role="status" aria-live="polite">正在获取模型…</span><button class="pop-link" id="btnRefreshModels" type="button">重新获取</button></div>
-  <div class="models-list dati-scroll" id="modelsList" role="radiogroup" aria-label="供应商可用模型" aria-busy="false"></div>
-  <footer class="models-dialog__foot"><div><span>即将使用</span><strong id="modelsSelected">尚未选择模型</strong></div><button class="dati-btn dati-btn--primary" type="button" id="btnUseModel" disabled>使用此模型 <span aria-hidden="true">↗</span></button></footer>
+</div>
+<div class="dati-card about">
+<div aria-hidden="true" class="about__mark">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M4 7.5h9M4 12h6M4 16.5h4"></path><path d="m14.5 15.2 2.2 2.3 4.3-4.6"></path></svg>
+</div>
+<div class="about__text">
+<strong>AutoDati · 自动答题助手</strong>
+<p>版本 <span id="aboutVersion">0.1.0</span> · 协议 <span id="aboutProtocol">1</span> · 全部数据仅保存在本机浏览器，不经过任何中转服务器。</p>
+</div>
+</div>
+</section>
+<section aria-labelledby="settings-tab-updates" class="view" data-view="updates" id="settings-panel-updates" role="tabpanel"><header class="view-head"><h1>关于与更新</h1><p>源码与版本发布在 GitHub，下载更新后由你确认安装。</p></header><div class="dati-card"><h3 class="dati-card__title">版本更新</h3><p aria-live="polite" data-update-status="" role="status">正在读取版本…</p><p class="dati-hint" data-update-time=""></p><div class="row-actions"><button class="dati-btn dati-btn--primary" data-update-check="" type="button">检查更新</button><button class="dati-btn" data-update-open="" type="button">GitHub Releases ↗</button></div><div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">自动检查新版本</span><span class="switch-row__desc">每 6 小时检查一次公开 Release，不会自动下载安装。</span></div><label class="dati-switch"><input data-path="updates.autoCheck" type="checkbox"/></label></div><p class="dati-hint">CRX 安装受浏览器策略限制。无法安装时，请下载 ZIP，解压后通过开发者模式加载；更新前可在“数据”中备份配置。</p></div><div class="dati-card"><h3 class="dati-card__title">开源项目</h3><p><a href="https://github.com/NekoYume517/auto-dati" rel="noopener noreferrer" target="_blank">NekoYume517/auto-dati ↗</a></p><p class="dati-hint">检查更新仅向 GitHub 请求公开版本信息，不发送题目、答案、供应商密钥或统计数据。</p></div></section>
+</main>
+</div>
+<dialog aria-describedby="modelsSource" aria-labelledby="modelsTitle" class="models-dialog" id="modelsDialog">
+<header class="models-dialog__head"><div><span class="models-dialog__eyebrow">模型连接</span><h2 id="modelsTitle">选择模型</h2><p id="modelsSource">从当前供应商获取可用模型</p></div><button aria-label="关闭模型选择" class="dati-btn dati-btn--icon" id="btnCloseModels" type="button">×</button></header>
+<div class="models-search"><svg fill="none" stroke="currentColor" stroke-width="1.7" viewbox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg><input aria-label="搜索模型" autocomplete="off" id="modelsSearch" placeholder="搜索模型名称或 ID…" type="search"/></div>
+<div class="models-dialog__summary"><span aria-live="polite" id="modelsCount" role="status">正在获取模型…</span><button class="pop-link" id="btnRefreshModels" type="button">重新获取</button></div>
+<div aria-busy="false" aria-label="供应商可用模型" class="models-list dati-scroll" id="modelsList" role="radiogroup"></div>
+<footer class="models-dialog__foot"><div><span>即将使用</span><strong id="modelsSelected">尚未选择模型</strong></div><button class="dati-btn dati-btn--primary" disabled="" id="btnUseModel" type="button">使用此模型 <span aria-hidden="true">↗</span></button></footer>
 </dialog>
-<div class="dati-toast" id="toast" role="status" aria-live="polite"></div>
-
-<script src="../common/protocol.js"></script>
+<div aria-live="polite" class="dati-toast" id="toast" role="status"></div>
+<dialog aria-label="编辑规则" class="rule-editor is-hidden" id="ruleEditor">
+<div class="form-grid">
+<div class="dati-field">
+<label class="dati-label" for="ruleName">规则名称</label>
+<input class="dati-input" id="ruleName" placeholder="例如：某站点作业" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="ruleKind">题型</label>
+<select class="dati-select" id="ruleKind">
+<option value="auto">自动判断</option>
+<option value="choice">单选题</option>
+<option value="multi">多选题</option>
+<option value="judge">判断题</option>
+<option value="blank">填空题</option>
+<option value="qa">问答 / 大题</option>
+<option value="generic">通用表单</option>
+</select>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="ruleRoot">题块容器选择器</label>
+<input class="dati-input dati-input--mono" id="ruleRoot" placeholder=".question-item" spellcheck="false" type="text"/>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="ruleStem">题干选择器</label>
+<input class="dati-input dati-input--mono" id="ruleStem" placeholder=".question-title" spellcheck="false" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="ruleOption">选项选择器</label>
+<input class="dati-input dati-input--mono" id="ruleOption" placeholder=".option" spellcheck="false" type="text"/>
+</div>
+<div class="dati-field">
+<label class="dati-label" for="ruleInput">输入框选择器</label>
+<input class="dati-input dati-input--mono" id="ruleInput" placeholder="input.blank" spellcheck="false" type="text"/>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="ruleDomains">生效域名 <span class="dati-badge">可选</span></label>
+<input class="dati-input dati-input--mono" id="ruleDomains" placeholder="example.com, exam.other.cn（多个用逗号或换行分隔，留空=全部站点）" spellcheck="false" type="text"/>
+<span class="dati-hint">自动匹配子域；也可填 <code>*.example.com</code>（仅子域）、完整 URL 前缀或 <code>/正则/</code>。</span>
+</div>
+<div class="dati-field form-grid__full">
+<label class="dati-label" for="ruleNextPage">下一页按钮选择器</label>
+<input class="dati-input dati-input--mono" id="ruleNextPage" placeholder="例如 .pagination button.next；留空则此规则不翻页" spellcheck="false" type="text"/>
+<label><input checked="" id="ruleNextPageEnabled" type="checkbox"/> 允许此规则自动翻页</label>
+<span class="dati-hint">仅在此规则命中题目且自动翻页总开关开启时生效；随规则一起导入、导出。</span>
+</div>
+</div>
+<div class="rule-editor__foot">
+<label class="dati-switch"><input checked="" id="ruleEnabled" type="checkbox"/> 启用此规则</label>
+<span class="spacer"></span>
+<button class="dati-btn dati-btn--ghost dati-btn--sm" id="btnRuleCancel" type="button">取消</button>
+<button class="dati-btn dati-btn--primary dati-btn--sm" id="btnRuleSave" type="button">保存规则</button>
+</div>
+</dialog><script src="../common/protocol.js"></script>
 <script src="../common/settings.js"></script>
 <script src="../common/statistics.js"></script>
 <script src="../vendor/echarts.min.js"></script>

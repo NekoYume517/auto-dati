@@ -938,7 +938,7 @@
           processQuestions(scanOnce({ force: true }), 'detect');
           break;
         case 'pick-template':
-          if (IS_TOP) openPicker();
+          if (IS_TOP) AD.RuleEditor.open();
           break;
         case 'close-overlays':
           AD.Overlay.closeAll();

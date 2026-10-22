@@ -337,7 +337,7 @@
       var siteBlocks = k.all(rootEl, '.examPaper_subject');
       if (siteBlocks.length > 1) continue;
       var siteRoot = rootEl.closest('.examPaper_subject') || siteBlocks[0];
-      if (siteRoot) {
+      if (siteRoot && (!rule.stemSelector || rule.stemSelector === '.subject_describe') && (!rule.optionSelector || rule.optionSelector === '.nodeLab')) {
         var siteQ = k.analyzeZhihuishu(siteRoot, ctx);
         if (siteQ) {
           siteQ.presetId = 'custom:' + (rule.id || rule.name || 'rule');

@@ -6,6 +6,7 @@
   'use strict';
 
   const STORAGE_KEY = 'ad_settings';
+  const WISDOM_RULE = { id: 'site-zhihuishu', name: '智慧树', enabled: true, kind: 'auto', domains: ['zhihuishu.com', 'zhihuishu.cn'], rootSelector: '.examPaper_subject', stemSelector: '.subject_describe', optionSelector: '.nodeLab', inputSelector: '', nextPageEnabled: true, nextPageSelector: '.switch-btn-box button:nth-of-type(2)' };
 
   const DEFAULTS = {
     version: 1,
@@ -67,7 +68,8 @@
     detect: {
       sitePresets: { zhihuishu: true },
       siteRules: { zhihuishu: { nextPageEnabled: true, nextPageSelector: '.switch-btn-box button:nth-of-type(2)' } },
-      customRules: [],
+      customRules: [clone(WISDOM_RULE)],
+      ruleCatalogVersion: 1,
       minTextLen: 4,
       viewportOnly: true,
       shadowDom: true,
@@ -181,7 +183,13 @@
     delete merged.detect.presets;
     // 目前只维护智慧树站点预设；丢弃旧版已下线站点的开关，且默认启用智慧树。
     const configuredSites = merged.detect && merged.detect.sitePresets || {};
-    merged.detect.sitePresets = { zhihuishu: configuredSites.zhihuishu !== false };
+    if (!raw || !raw.detect || raw.detect.ruleCatalogVersion !== 1) {
+      const rules = Array.isArray(raw && raw.detect && raw.detect.customRules) ? clone(raw.detect.customRules) : [];
+      if (!rules.some(function (r) { return r.id === WISDOM_RULE.id; })) rules.unshift(Object.assign(clone(WISDOM_RULE), merged.detect.siteRules.zhihuishu, { enabled: configuredSites.zhihuishu !== false }));
+      merged.detect.customRules = rules;
+    }
+    merged.detect.ruleCatalogVersion = 1;
+    merged.detect.sitePresets = { zhihuishu: false };
     // 旧版全局按钮配置迁移到已有自定义规则，之后只按命中规则定位。
     const legacyNext = String(merged.mode.nextPageSelector || '').trim();
     if (legacyNext && Array.isArray(merged.detect.customRules)) {

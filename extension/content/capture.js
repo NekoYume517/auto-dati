@@ -425,7 +425,7 @@
         let target = el;
         try {
           const q = AD.Detector && AD.Detector.buildFromElement ? AD.Detector.buildFromElement(el) : null;
-          if (q && q.root) target = q.root;
+          if (!opts.exact && q && q.root) target = q.root;
         } catch (err) { /* 保持原元素 */ }
 
         const r = target.getBoundingClientRect();

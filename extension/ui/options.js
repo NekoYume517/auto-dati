@@ -267,7 +267,7 @@
     var statPresets = $('#statPresets');
     if (statPresets) statPresets.textContent = String(siteOn + rulesOn);
     var statSites = $('#statSites');
-    if (statSites) statSites.textContent = '站点预设 ' + siteOn + ' 个 · 自定义 ' + rulesOn + ' 条';
+    if (statSites) statSites.textContent = '已启用规则 ' + rulesOn + ' 条';
     var siteCount = $('#siteCount');
     if (siteCount) siteCount.textContent = siteOn + ' / ' + $$('[data-site]').length + ' 已启用';
 
@@ -1095,6 +1095,7 @@
     var editor = $('#ruleEditor');
     if (!editor) return;
     editor.classList.remove('is-hidden');
+    if (!editor.open) editor.showModal();
     $('#ruleName').value = r.name || '';
     $('#ruleKind').value = r.kind || 'choice';
     $('#ruleRoot').value = r.rootSelector || '';
@@ -1106,12 +1107,11 @@
     $('#ruleDomains').value = Array.isArray(r.domains) ? r.domains.join(', ') : (r.domains || '');
     $('#ruleEnabled').checked = r.enabled !== false;
     $('#ruleName').focus();
-    editor.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
   function closeRuleEditor() {
     var editor = $('#ruleEditor');
-    if (editor) editor.classList.add('is-hidden');
+    if (editor) { editor.close(); editor.classList.add('is-hidden'); }
     ruleDraft = null;
     ruleEditIndex = -1;
   }
