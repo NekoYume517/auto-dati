@@ -623,3 +623,5 @@
 }
 /* Keyboard-triggered panels should respond immediately. */
 .dati-panel[data-instant]{transition:none}
+:host .dati-panel[data-hide-question] .dati-panel__stem{display:none!important}
+:host .dati-panel[data-hide-options] .dati-question-options{display:none!important}

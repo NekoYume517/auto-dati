@@ -88,6 +88,8 @@
       theme: 'dark',
       accent: '#6366f1',
       panelWidth: 384,
+      showQuestion: true,
+      showOptions: true,
       fontSize: 13,
       radius: 14,
       blur: true,

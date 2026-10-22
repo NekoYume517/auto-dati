@@ -1,4 +1,5 @@
 import http from 'node:http';
+import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {launchBrowser,createTarget,attachTo,waitForExtension,until,sleep} from './cdp.mjs';
@@ -17,9 +18,14 @@ try{
  await options.eval('document.querySelector("#ruleStem").value=".changed";document.querySelector("#btnRuleSave").click()');await until(()=>options.eval('!document.querySelector("#ruleEditor").open'));
  ok('预设题干可编辑保存',await options.eval('AD.Settings.snapshot().detect.customRules[0].stemSelector===".changed"'));
  await options.eval('AD.Settings.save({mode:{autoAnswer:false,popup:false,autoNextPage:false},detect:{customRules:[{id:"page",name:"当前页",kind:"choice",rootSelector:".q",stemSelector:".stem",optionSelector:"label",nextPageSelector:"#next",enabled:true}]}})');
- const page=await open('http://127.0.0.1:'+server.address().port+'/');await page.captureMainFrameId();const ex=s=>page.evalInExtension(s,id);await until(()=>ex('!!AD.RuleEditor && !!AD.App.state.settings'));await sleep(500);await ex('AD.RuleEditor.open();void 0');await until(()=>ex('!!document.querySelector("[data-dati-ignore]") && !!Array.from(document.querySelectorAll("[data-dati-ignore]")).find(h=>h.shadowRoot?.querySelector("dialog[open]"))'));
- const shadow='Array.from(document.querySelectorAll("[data-dati-ignore]")).find(h=>h.shadowRoot?.querySelector("dialog"))?.shadowRoot';
+ const page=await open('http://127.0.0.1:'+server.address().port+'/');await page.captureMainFrameId();const ex=s=>page.evalInExtension(s,id);await until(()=>ex('!!AD.RuleEditor && !!AD.App.state.settings'));await sleep(500);await ex('AD.RuleEditor.open();void 0');await until(()=>ex('!!document.querySelector("[data-dati-ignore]") && !!Array.from(document.querySelectorAll("[data-dati-ignore]")).find(h=>h.shadowRoot?.querySelector("[data-rule-panel]"))'));
+ const shadow='Array.from(document.querySelectorAll("[data-dati-ignore]")).find(h=>h.shadowRoot?.querySelector("[data-rule-panel]"))?.shadowRoot';
  ok('网页预设编辑器列出统一规则',await ex('(()=>{const s='+shadow+';return s.querySelector("aside button").textContent==="当前页"})()'));
+ ok('网页编辑器是浮动面板，共用答题弹窗样式而非模态框',await ex('(()=>{const s='+shadow+';return !s.querySelector("dialog") && s.querySelector("[data-rule-panel]").classList.contains("dati-panel") && getComputedStyle(s.querySelector("[data-rule-panel]")).position==="fixed"})()'));
+ await options.eval('AD.Settings.save({ui:{theme:"light",animate:false,blur:false}})');
+ await until(()=>ex('('+shadow+').querySelector("[data-rule-panel]").dataset.theme==="light"'));
+ fs.mkdirSync('test/screens',{recursive:true});fs.writeFileSync('test/screens/rule-editor-floating.png',Buffer.from((await page.send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+ ok('浮动编辑器同步主题与动效设置',await ex('('+shadow+').querySelector("[data-rule-panel]").hasAttribute("data-noanim")'));
  await until(()=>ex('('+shadow+').querySelector("[role=status]").textContent.includes("4 个位置")'));
  ok('选择规则后跨 iframe 显示题目和下一页匹配框',true);
  await ex('(()=>{const s='+shadow+';s.querySelector("[data-field=name]").value="修改后"})()');
@@ -29,10 +35,18 @@ try{
  await ex('('+shadow+').querySelector("[data-field=nextPageSelector]").parentElement.querySelector("button").click()');
  const r=await page.eval('(()=>{const r=document.querySelector("#next").getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()');
  for(const type of ['mousePressed','mouseReleased'])await page.send('Input.dispatchMouseEvent',{type,...r,button:'left',clickCount:1});
- await until(()=>ex('('+shadow+').querySelector("dialog").open'));
+ await until(()=>ex('('+shadow+').querySelector("[data-rule-panel]").hidden===false'));
  ok('可通过元素拾取修改任意规则的下一页配置且不点击按钮',await ex('!!('+shadow+').querySelector("[data-field=nextPageSelector]").value'));
  await ex('('+shadow+').querySelector("[data-close]").click()');await sleep(300);
- ok('关闭编辑器清除匹配框',await ex('!Array.from(document.querySelectorAll("[data-dati-ignore]")).some(h=>h.shadowRoot?.querySelector("dialog"))'));
+ ok('关闭编辑器清除匹配框',await ex('!Array.from(document.querySelectorAll("[data-dati-ignore]")).some(h=>h.shadowRoot?.querySelector("[data-rule-panel]"))'));
+ await ex('AD.__display=AD.Overlay.show({question:AD.Detector.scan(document,{skipAnswered:false})[0]});AD.Overlay.done(AD.__display,{text:"B"});void 0');
+ await options.eval('AD.Settings.save({ui:{showQuestion:false,showOptions:false}})');
+ await until(()=>ex('AD.Overlay.session(AD.__display).panel.hasAttribute("data-hide-question")'));
+ ok('题目和选项可分别隐藏，答案仍可见',await ex('(()=>{const p=AD.Overlay.session(AD.__display).panel;return getComputedStyle(p.querySelector(".dati-panel__stem")).display==="none"&&getComputedStyle(p.querySelector(".dati-question-options")).display==="none"&&getComputedStyle(p.querySelector(".dati-answer-chips")).display!=="none"})()'));
+ await options.eval('AD.Settings.save({ui:{showQuestion:true,showOptions:false}})');
+ await until(()=>ex('!AD.Overlay.session(AD.__display).panel.hasAttribute("data-hide-question")'));
+ ok('显示范围实时生效，隐藏选项不影响题干',await ex('(()=>{const p=AD.Overlay.session(AD.__display).panel;return getComputedStyle(p.querySelector(".dati-panel__stem")).display!=="none"&&getComputedStyle(p.querySelector(".dati-question-options")).display==="none"})()'));
+ ok('答案开关不可关闭',await options.eval('document.querySelector("#showAnswerAlways").checked && document.querySelector("#showAnswerAlways").disabled'));
  ok('删除规则后迁移不会重新插入智慧树',await options.eval('AD.Settings.save({detect:{customRules:[]}}).then(s=>s.detect.customRules.length===0)'));
 }finally{clients.forEach(c=>c.close());browser.kill();server.close();}
 console.log('统一规则编辑器：'+count+' 通过');process.exit(0);

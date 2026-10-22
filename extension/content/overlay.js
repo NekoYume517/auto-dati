@@ -200,6 +200,8 @@
     node.style.setProperty('--dati-radius', (ui.radius || 14) + 'px');
     node.toggleAttribute('data-noblur', ui.blur === false);
     node.toggleAttribute('data-noanim', ui.animate === false);
+    node.toggleAttribute('data-hide-question', ui.showQuestion === false);
+    node.toggleAttribute('data-hide-options', ui.showOptions === false);
   }
 
   /* ------------------------------ 定位 ------------------------------ */
@@ -745,6 +747,7 @@
   /* ------------------------------ API ------------------------------ */
 
   function Overlay() { }
+  Overlay.applyTheme = applyTheme;
 
   Overlay.init = function () {
     prefetchCSS();
