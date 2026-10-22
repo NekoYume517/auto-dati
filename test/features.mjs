@@ -54,8 +54,8 @@ try {
   await options.eval('document.querySelector("[data-settings-tab=hotkey]").click()');
   ok('截图选项与快捷键位于同一二级设置页', await options.eval('!!document.querySelector("[data-view=hotkey] [data-path=\\"advanced.areaPicker\\"]") && !!document.querySelector("[data-view=hotkey] #hkCapture")'));
   await options.eval('document.querySelector("[data-nav=detect]").click()');
-  ok('离开设置隐藏二级 Tab，智慧树按钮配置位于站点规则中', await options.eval('document.querySelector("#settingsTabs").hidden && !!document.querySelector("[data-view=detect] [data-path=\\"detect.siteRules.zhihuishu.nextPageSelector\\"]") && !document.querySelector("[data-path=\\"mode.nextPageSelector\\"]")'));
-  ok('旧全局按钮选择器迁入已有规则', await options.eval('(()=>{const s=AD.Settings.normalize({mode:{nextPageSelector:"#legacy-next"},detect:{customRules:[{id:"legacy",rootSelector:".q"}]}});return !s.mode.nextPageSelector && s.detect.customRules[0].nextPageSelector==="#legacy-next"})()'));
+  ok('离开设置隐藏二级 Tab，翻页选择器在统一规则编辑器中', await options.eval('document.querySelector("#settingsTabs").hidden && !!document.querySelector("#ruleNextPage") && !document.querySelector("[data-site]")'));
+  ok('旧全局按钮选择器迁入已有规则', await options.eval('(()=>{const s=AD.Settings.normalize({mode:{nextPageSelector:"#legacy-next"},detect:{customRules:[{id:"legacy",rootSelector:".q"}]}});return !s.mode.nextPageSelector && s.detect.customRules.find(r=>r.id==="legacy").nextPageSelector==="#legacy-next"})()'));
   const customRulesText = await options.eval(`AD.Settings.save({detect:{customRules:[{id:'share-rule',name:'分享规则',kind:'choice',rootSelector:'.q',stemSelector:'.stem',optionSelector:'.opt',inputSelector:'',domains:['example.com'],enabled:true,nextPageSelector:'#rule-next',nextPageEnabled:false}]}}).then(()=>{
     document.querySelector('#btnExportRules').click();
     return document.querySelector('#ruleTransferText').value;
