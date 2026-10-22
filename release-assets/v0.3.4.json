@@ -1,0 +1,25 @@
+{
+  "version": "0.3.4",
+  "files": [
+    {
+      "name": "auto-dati-v0.3.4.crx",
+      "blob": "01052f3af7cf9c60a0e334a7924fc1ad7d15419f",
+      "sha256": "8457c034a9046fb62ee9bd03cedb0284587a96eadc1f8fbd72e87299b1c382da"
+    },
+    {
+      "name": "auto-dati-v0.3.4.zip",
+      "blob": "83e8b27a8c43396e5d6de92f80a3b62d5603ab47",
+      "sha256": "80fb94ff191b353b25e08f60ab06ea22e42cde3ee9fc76fe77cc80f2e960a601"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "blob": "e0d11fd1bff6761ac38058e1c3e05064af5e8d4b",
+      "sha256": "f50cbd5ee3dd5cba6b9f4e557fbe07480e947484dc3b0e55019552abcf583bb6"
+    },
+    {
+      "name": "release-info.json",
+      "blob": "4a1aa98a37e4220aa467a7ecaf66c4cb7b8d1371",
+      "sha256": "7db3f328af947ca8a658658c15f8e1bd72430ffaebd92ae91349e282d1e7de2a"
+    }
+  ]
+}

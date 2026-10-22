@@ -31,6 +31,7 @@
       hoverHint: false
     },
     api: {
+      outputLimitVersion: 1,
       activeId: 'p1',
       profiles: [{
         id: 'p1',
@@ -41,7 +42,7 @@
         apiKey: '',
         model: 'gpt-4o-mini',
         temperature: 0.2,
-        maxTokens: 2048,
+        maxTokens: 10240,
         stream: true,
         vision: true,
         // 思考模式：auto=跟随服务端默认；off=尽力关闭推理（DeepSeek-R1/Glm 等支持时）；
@@ -204,6 +205,12 @@
     if (!Array.isArray(merged.api.profiles) || !merged.api.profiles.length) {
       merged.api.profiles = clone(DEFAULTS.api.profiles);
     }
+    merged.api.profiles.forEach(function (p) {
+      if (!p) return;
+      if ((!raw || !raw.api || raw.api.outputLimitVersion !== 1) && p.maxTokens === 2048) p.maxTokens = 10240;
+      p.maxTokens = Math.min(10240, Math.max(64, Math.floor(Number(p.maxTokens) || 10240)));
+    });
+    merged.api.outputLimitVersion = 1;
     const ids = merged.api.profiles.map(function (p) { return p && p.id; });
     if (ids.indexOf(merged.api.activeId) < 0) merged.api.activeId = ids[0];
     merged.version = 1;

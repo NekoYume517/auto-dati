@@ -58,6 +58,10 @@ try {
   const ex = expression => page.evalInExtension(expression, ID);
   const point = { x: 121.68, y: 184.08 };
   const target = await ex(`AD.Frame.probeAt(${point.x},${point.y},{whole:true})`);
+  const contextTarget = await ex(`AD.Frame.probeAt(${point.x},${point.y},{contextRect:${JSON.stringify({x:point.x-15,y:point.y-15,w:90,h:90})}})`);
+  ok('跨域深层框架的区域上下文保留 HTML 和目标标记', contextTarget.context.html.includes('深层框架题目') && contextTarget.context.html.includes('textarea') && contextTarget.context.html.includes('data-context-target'));
+  const regionContext = await ex(`AD.Capture.collectContext(${JSON.stringify({x:point.x-15,y:point.y-15,w:90,h:90})})`);
+  ok('顶层自由框选自动补充跨域 iframe 内的题目 HTML', regionContext.html.includes('深层框架题目') && regionContext.html.includes('textarea'));
   ok('从顶层能直接命中最深层题块，跳过隐藏兄弟框架', target && !target.isFrame && /深层框架题目/.test(target.text) && target.path.length === 3 && target.documentId);
   ok('远程元素保留完整选择器和题块矩形', target?.selector && near(target.rect.x, 101.52) && near(target.rect.w, 331.2));
   // 真实鼠标事件：顶层遮罩可操作，但命中查询进入深层框架。
@@ -112,6 +116,7 @@ try {
   ok('深层题块可直接发起截图答题', capture?.ok);
   await until(() => ex('document.querySelector("#dati-overlay-host")?.shadowRoot.querySelector(".dati-stream")?.textContent.includes("光反应")'));
   ok('截图答题在顶层只生成一个面板，模型请求包含真实题干和图片', await ex('document.querySelector("#dati-overlay-host").shadowRoot.querySelectorAll(".dati-panel").length===1') && requests.some(r => JSON.stringify(r.messages).includes('深层框架题目') && JSON.stringify(r.messages).includes('image_url')));
+  ok('跨 iframe 截图请求同时将完整题块 HTML 交给模型', requests.some(r=>JSON.stringify(r.messages).includes('textarea') && JSON.stringify(r.messages).includes('data-context-target')));
   const childPanels = await frames('return window!==top && !!document.querySelector("#dati-overlay-host")?.shadowRoot.querySelector(".dati-panel")');
   ok('截图作答没有在每层 iframe 重复创建面板', childPanels.every(x => !x.result));
   await ex('document.querySelector("#dati-overlay-host").shadowRoot.querySelector("[data-act=fill]").click()');

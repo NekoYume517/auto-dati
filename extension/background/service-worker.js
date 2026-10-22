@@ -150,12 +150,12 @@ importScripts(
         (async function () {
           const results = await chrome.scripting.executeScript({
             target: { tabId: tabId, allFrames: true },
-            func: async function (point, whole) {
+            func: async function (point, options) {
               if (!globalThis.AD || !AD.Frame || !AD.Capture) return null;
-              try { return await AD.Frame.probeAtTop(point, { whole: whole }); }
+              try { return await AD.Frame.probeAtTop(point, options); }
               catch (e) { return null; }
             },
-            args: [{ x: msg.point.x, y: msg.point.y }, !!(msg.options && msg.options.whole)]
+            args: [{ x: msg.point.x, y: msg.point.y }, { whole: !!(msg.options && msg.options.whole), contextRect: msg.options && msg.options.contextRect || null }]
           });
           // 只有被父框架实际命中的子框架才能继续向内选，排除遮挡层后面/隐藏的兄弟框架。
           const hits = results.filter(function (item) { return item.result && Array.isArray(item.result.path); });

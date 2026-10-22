@@ -243,6 +243,7 @@
    */
   function pickElement(opts) {
     opts = opts || {};
+    const allowRegion = !opts.exact && opts.allowRegion !== false;
     if (activeCancel) activeCancel();
     if (AD.Overlay) AD.Overlay.hideHint();
     return new Promise(function (resolve) {
@@ -280,7 +281,7 @@
       tag.className = 'tag';
       const tip = document.createElement('div');
       tip.className = 'tip';
-      tip.innerHTML = '<b>单击选择元素 · 拖动框选题目</b><span class="esc">Esc / 右键 退出</span>';
+      tip.innerHTML = '<b>' + (allowRegion ? '单击选择元素 · 拖动框选题目' : '单击选择元素') + '</b><span class="esc">Esc / 右键 退出</span>';
 
       wrap.appendChild(hl);
       wrap.appendChild(tag);
@@ -337,7 +338,7 @@
 
       async function onMove(e) {
         if (selectingFrame) return;
-        if (start && (dragging || Math.hypot(e.clientX - start.x, e.clientY - start.y) >= 6)) {
+        if (allowRegion && start && (dragging || Math.hypot(e.clientX - start.x, e.clientY - start.y) >= 6)) {
           dragging = true;
           const x = Math.min(start.x, e.clientX), y = Math.min(start.y, e.clientY);
           const w = Math.abs(e.clientX - start.x), h = Math.abs(e.clientY - start.y);
@@ -394,6 +395,7 @@
         const x = Math.min(start.x, e.clientX), y = Math.min(start.y, e.clientY);
         const w = Math.abs(e.clientX - start.x), h = Math.abs(e.clientY - start.y);
         start = null;
+        if (!allowRegion && Math.hypot(w, h) >= 6) return;
         if (dragging && w >= 8 && h >= 8) {
           cleanup({ el: null, rect: { x: x, y: y, w: w, h: h }, selector: '', mode: 'region' });
           return;
@@ -410,11 +412,11 @@
           if (selectingFrame) return;
           selectingFrame = true;
           const sequence = ++probeSequence;
-          const target = await AD.Frame.probeAt(e.clientX, e.clientY, { whole: true }).catch(function () { return null; });
+          const target = await AD.Frame.probeAt(e.clientX, e.clientY, { whole: !opts.exact }).catch(function () { return null; });
           selectingFrame = false;
           if (done || sequence !== probeSequence) return;
           if (!target || target.isFrame) {
-            tip.textContent = '此框架暂时无法读取，可拖动框选题目；Esc / 右键退出';
+            tip.textContent = allowRegion ? '此框架暂时无法读取，可拖动框选题目；Esc / 右键退出' : '此框架暂时无法读取，请等待加载后重试；Esc / 右键退出';
             return;
           }
           cleanup({ el: null, rect: target.rect, selector: target.selector, remote: target });
@@ -569,6 +571,93 @@
     return '';
   }
 
+  // 手动搜题不依赖站点规则：收集所有与选区相交的内容，再扩展到完整题块。
+  // HTML 仅作为模型输入，不插回网页；移除脚本和敏感表单值。
+  function contextNear(rect, selected) {
+    const pad = 28;
+    const touches = function (el) {
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && r.right >= rect.x - pad && r.left <= rect.x + rect.w + pad &&
+        r.bottom >= rect.y - pad && r.top <= rect.y + rect.h + pad;
+    };
+    const contains = function (parent, child) {
+      for (let node = child; node; node = node.parentElement || node.getRootNode().host) if (node === parent) return true;
+      return false;
+    };
+    let root = selected || null;
+    if (!root) {
+      const visit = function (scope) {
+        for (const el of scope.querySelectorAll('*')) {
+          if (el.closest('[data-dati-ignore],script,style,noscript') || !touches(el)) continue;
+          const shadow = AD.PresetKit && AD.PresetKit.shadowRootOf(el);
+          if (shadow) visit(shadow);
+          if (el.children.length && !el.matches('img,svg,canvas,input,textarea,select,iframe,frame')) continue;
+          if (!root) root = el;
+          while (root && !contains(root, el)) root = root.parentElement || (root.getRootNode().host || null);
+        }
+      };
+      visit(document);
+    }
+    if (!root) root = elementAt(rect.x + rect.w / 2, rect.y + rect.h / 2);
+    if (!root) return { text: '', html: '' };
+    try {
+      const q = AD.Detector && AD.Detector.buildFromElement(root);
+      if (q && q.root && q.root.contains(root)) root = q.root;
+    } catch (e) { /* 手动区域允许没有规则 */ }
+    for (let i = 0; i < 2; i++) {
+      const parent = root.parentElement;
+      if (!parent || parent === document.body || parent === document.documentElement ||
+          (parent.textContent || '').length > 24000 || parent.outerHTML.length > 240000) break;
+      root = parent;
+    }
+    const clone = root.cloneNode(true);
+    const expand = function (original, copy, depth) {
+      if (original === selected || (!selected && !original.children.length && touches(original))) copy.setAttribute('data-context-target', 'true');
+      const children = Array.from(original.children || []), copies = Array.from(copy.children || []);
+      children.forEach(function (child, i) { if (copies[i]) expand(child, copies[i], depth + 1); });
+      const shadow = AD.PresetKit && AD.PresetKit.shadowRootOf(original);
+      if (shadow) {
+        const section = document.createElement('section');
+        section.setAttribute('data-context-shadow', '');
+        Array.from(shadow.childNodes).forEach(function (child) { section.appendChild(child.cloneNode(true)); });
+        // 嵌套 shadow 继续补充。
+        Array.from(shadow.children).forEach(function (child, i) { expand(child, section.children[i], depth + 1); });
+        copy.appendChild(section);
+      }
+      try {
+        if (original.matches('iframe,frame') && original.contentDocument && original.contentDocument.body) {
+          const body = original.contentDocument.body, section = body.cloneNode(true);
+          expand(body, section, depth + 1); copy.appendChild(section);
+        }
+      } catch (e) { /* 跨域内容由 Frame 路由收集 */ }
+    };
+    expand(root, clone, 0);
+    clone.querySelectorAll('script,style,noscript,[data-dati-ignore],input[type=password],input[type=hidden]').forEach(function (el) { el.remove(); });
+    if (clone.matches('input[type=password],input[type=hidden],[data-dati-ignore]')) return { text: '', html: '' };
+    const html = clone.outerHTML || '', text = clone.textContent || '';
+    return { text: text.trim(), html: html };
+  }
+
+  async function collectContext(rect, selected) {
+    const context = contextNear(rect, selected);
+    const chunks = [context.html], texts = [context.text];
+    if (AD.Frame) {
+      const topRect = await AD.Frame.toTopRect(rect);
+      for (const frame of AD.Frame.iframes(document)) {
+        const r = frame.getBoundingClientRect();
+        const x = Math.max(rect.x, r.left), y = Math.max(rect.y, r.top);
+        const right = Math.min(rect.x + rect.w, r.right), bottom = Math.min(rect.y + rect.h, r.bottom);
+        if (!topRect || right <= x || bottom <= y) continue;
+        const target = await AD.Frame.probeAt((x + right) / 2, (y + bottom) / 2, { contextRect: topRect }).catch(function () { return null; });
+        if (target && target.context) {
+          chunks.push(target.context.html); texts.push(target.context.text);
+        }
+      }
+    }
+    const html = chunks.filter(Boolean).join('\n'), text = texts.filter(Boolean).join('\n');
+    return { html: html, text: text };
+  }
+
   AD.Capture = {
     parseCombo: parseCombo,
     comboMatches: comboMatches,
@@ -584,6 +673,8 @@
     elementAt: elementAt,
     rectOf: rectOf,
     textNear: textNear,
+    contextNear: contextNear,
+    collectContext: collectContext,
     lastMouse: function () { return lastMouse; }
   };
 }(globalThis.AD = globalThis.AD || {}));

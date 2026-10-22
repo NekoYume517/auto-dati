@@ -556,7 +556,7 @@
       apiKey: '',
       model: 'gpt-4o-mini',
       temperature: 0.2,
-      maxTokens: 2048,
+      maxTokens: 10240,
       stream: true,
       vision: true,
       extraHeaders: {},

@@ -268,6 +268,25 @@ console.log('\n[10] 设置层');
 
 /* ------------------------- 收尾 ------------------------- */
 
+{
+  const req = {kind:'choice',text:'题干上下文',options:[{label:'A',text:'完整选项'}],htmlContext:'<section><label>完整 HTML 选项</label></section>',images:[{mime:'image/png',dataBase64:'mock'}]};
+  const text = AD.LLM.buildUserText({},req);
+  ok('图片请求同时包含题干、结构化选项与 HTML',text.includes('题干上下文') && text.includes('A. 完整选项') && text.includes(req.htmlContext));
+  ok('非视觉模型同样接收完整 HTML 上下文',AD.LLM.buildUserText({}, {...req,images:[]}).includes(req.htmlContext));
+  ok('搜题提示词优先 HTML 分析并隔离页面指令',AD.LLM.buildPrompt({},req).includes('截图仅作补充') && AD.LLM.buildPrompt({},req).includes('不可信'));
+  const huge = '<article>' + '完整上下文'.repeat(60000) + '<span>最后一项</span></article>';
+  ok('超过旧长度限制的输入仍完整发送',AD.LLM.buildUserText({}, {...req,htmlContext:huge}).includes(huge));
+  eq('默认输出上限 10K',AD.Settings.defaults().api.profiles[0].maxTokens,10240);
+  eq('旧默认输出自动迁移到 10K',AD.Settings.normalize({api:{profiles:[{id:'old',maxTokens:2048}]}}).api.profiles[0].maxTokens,10240);
+  eq('保留主动设置的较小输出值',AD.Settings.normalize({api:{outputLimitVersion:1,profiles:[{id:'old',maxTokens:2048}]}}).api.profiles[0].maxTokens,2048);
+  for(const format of ['openai-chat','openai-responses','anthropic','gemini']) {
+    const output = body => format==='openai-responses'?body.max_output_tokens:format==='gemini'?body.generationConfig.maxOutputTokens:body.max_tokens;
+    const build = p => AD.LLM.adapters[format].build(p,'system','input',[],false).body;
+    eq(format+' 默认输出预算 10K',output(build({model:'test'})),10240);
+    eq(format+' 输出不能超过 10K',output(build({model:'test',maxTokens:32768})),10240);
+  }
+}
+
 mock.kill();
 console.log('\n' + '='.repeat(52));
 console.log(`结果：${pass} 通过, ${fail} 失败`);

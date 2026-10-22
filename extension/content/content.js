@@ -340,6 +340,7 @@
         kind: question.kind,
         options: question.options,
         images: manualCapture ? payload.images || [] : [],
+        htmlContext: manualCapture ? payload.htmlContext || '' : '',
         dedupeKey: key
       }, {
         onReady: function (info) { AD.Overlay.ready(sessionId, info); },
@@ -770,7 +771,8 @@
       };
     }
 
-    const nearby = AD.Capture.textNear(rectLocal) || (question.stem || '');
+    const context = await AD.Capture.collectContext(rectLocal, picked.el);
+    const nearby = context.text || AD.Capture.textNear(rectLocal) || (question.stem || '');
     const profile = (state.settings.api.profiles || []).filter(function (p) {
       return p.id === state.settings.api.activeId;
     })[0] || (state.settings.api.profiles || [])[0] || null;
@@ -784,6 +786,7 @@
       pendingFrameFills.set(qid, question);
       const result = await AD.Capture.sendMessage({ type: 'DATI_FRAME_CAPTURE_START', qid: qid, payload: {
         id: qid, kind: question.kind, stem: nearby || question.stem || '（截图识别）', rect: rectTop,
+        htmlContext: context.html,
         options: (question.options || []).map(function (o) { return { label: o.label, text: o.text }; }),
         images: img ? [{ mime: img.mime, dataBase64: img.dataBase64 }] : []
       } });
@@ -833,6 +836,7 @@
     // - 模型不支持视觉 → 只发文本
     const request = {
       text: nearby || '',
+      htmlContext: context.html,
       kind: question.kind || 'generic',
       images: (visionOk && img) ? [{ mime: img.mime, dataBase64: img.dataBase64 }] : [],
       dedupeKey: '',

@@ -238,6 +238,12 @@
         w: rect.w * view.w / innerWidth, h: rect.h * view.h / innerHeight },
       tag: el.tagName.toLowerCase(), text: (AD.PresetKit.txt(el) || '').slice(0, 1200),
       selector: AD.Picker ? AD.Picker.patternSelector(el, { scope: el.getRootNode() }) : '',
+      context: opts.contextRect ? AD.Capture.contextNear({
+        x: (opts.contextRect.x - view.x) * innerWidth / view.w,
+        y: (opts.contextRect.y - view.y) * innerHeight / view.h,
+        w: opts.contextRect.w * innerWidth / view.w,
+        h: opts.contextRect.h * innerHeight / view.h
+      }) : undefined,
       url: location.href
     };
   }
