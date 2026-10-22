@@ -113,17 +113,20 @@
         return { ok: false, reason: '翻页已取消或题目已变化' };
       }
     }
-    button.click();
-    return { ok: true };
+    const token = crypto.randomUUID();
+    button.setAttribute('data-dati-next-token', token);
+    setTimeout(function () { if (button.getAttribute('data-dati-next-token') === token) button.removeAttribute('data-dati-next-token'); }, 5000);
+    return { ok: true, clickToken: token };
   }
 
   // 包括先填答案再开启、Vue 异步更新选中标记、页面脚本早于扩展更新等情况。
   function schedule() {
     if (!AD.Settings.snapshot().mode.autoNextPage || AD.Settings.snapshot().enabled === false) return;
-    clearTimeout(notificationTimer);
+    if (notificationTimer) return;
     notificationTimer = setTimeout(notifyIfReady, 180);
   }
   async function notifyIfReady() {
+    notificationTimer = 0;
     const settings = AD.Settings.snapshot();
     if (!settings.mode.autoNextPage || settings.enabled === false) return;
     const page = inspect();
@@ -157,6 +160,7 @@
     if (!settings.mode.highlightNextPage && removeHighlight) removeHighlight();
     if (!settings.mode.autoNextPage || settings.enabled === false) {
       clearTimeout(notificationTimer); clearTimeout(retryTimer);
+      notificationTimer = 0; retryTimer = 0;
       if (removeHighlight) removeHighlight();
       return;
     }

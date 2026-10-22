@@ -226,6 +226,7 @@
   }
 
   function refreshState() {
+    if (hasChrome) chrome.runtime.sendMessage({type:"DATI_NAV_STATUS"}).then(function(r){ var el=document.querySelector("#navigationStatus");if(el && r && r.ok) el.textContent=r.text; }).catch(function(){});
     if (!isEnabled()) {
       setStateView('idle', '总开关已关闭', '打开总开关后才会检测题目', 0);
       return Promise.resolve();

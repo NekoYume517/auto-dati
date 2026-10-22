@@ -161,6 +161,19 @@ try {
   await options.eval('AD.Settings.save({detect:{customRules:[{id:"global-site-rule",enabled:true,kind:"choice",rootSelector:".q",stemSelector:".stem",optionSelector:".opt",nextPageSelector:"#next",nextPageEnabled:false}]}})');
   await sleep(700);
   ok('iframe 外按钮预览期间关闭题目规则翻页，会取消点击', await page.eval('clicks===0'));
+  await scenario('flood', {autoNextPage:false});
+  await until(()=>page.eval('!!document.querySelector("input:checked")'));
+  await page.eval('setInterval(()=>document.body.style.setProperty("--clock",String(Date.now())),40)');
+  await options.eval('AD.Settings.save({mode:{autoNextPage:true}})');
+  await until(()=>page.eval('pageIndex===2'));
+  ok('持续 DOM 变化不会饿死自动翻页计时器',await page.eval('clicks===1'));
+  await scenario('page-error', {autoNextPage:false});
+  await until(()=>page.eval('!!document.querySelector("input:checked")'));
+  await page.eval('document.querySelector("#next").onclick=()=>{clicks++;throw new Error("isAllNative test failure")}');
+  await options.eval('AD.Settings.save({mode:{autoNextPage:true}})');
+  await until(()=>page.eval('clicks===1'));
+  await sleep(700);
+  ok('网页点击处理报错时停止，不无限重试',await page.eval('clicks===1 && pageIndex===1'));
 } finally {
   for (const client of clients) client.close();
   browser.kill(); server.close();

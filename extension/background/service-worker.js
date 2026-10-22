@@ -93,6 +93,12 @@ importScripts(
     };
 
     switch (msg.type) {
+      case 'DATI_NAV_STATUS':
+        if (sender.id !== chrome.runtime.id || sender.tab || !String(sender.url || '').startsWith(chrome.runtime.getURL('ui/'))) { reply({ok:false}); return false; }
+        chrome.tabs.query({active:true,lastFocusedWindow:true}).then(async function (tabs) {
+          reply({ok:true,text:tabs[0] ? await AD.AutoNavigation.status(tabs[0].id) : '未打开网页'});
+        }).catch(function () { reply({ok:false}); });
+        return true;
       case 'DATI_UPDATE_STATUS':
       case 'DATI_CHECK_UPDATE':
       case 'DATI_OPEN_RELEASE':

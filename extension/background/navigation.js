@@ -37,6 +37,7 @@
       }
       const before = signature(frames);
       if (run.lastClicked === before) return stop(run, '当前题目尚未翻页');
+      if (!source.result.navigation.length) return stop(run, '当前题目规则未配置翻页按钮，请在规则中设置');
       // 优先当前题目文档，再查顶层或其他有题目的文档，支持按钮位于 iframe 外的页面。
       const target = [source].concat(frames.filter(function (f) { return f !== source && (f.frameId === 0 || f.result.questions.length); }))
         .find(function (f) { return f.result.hasNext; });
@@ -46,6 +47,21 @@
       const clicked = await chrome.scripting.executeScript({ target: { tabId: tabId, documentIds: [target.documentId] },
         func: function (expected, navigation) { return AD.Navigation.clickIfCurrent(expected, navigation); }, args: [target.result.fingerprint, target.result.navigation] });
       if (!clicked[0] || !clicked[0].result || !clicked[0].result.ok) return stop(run, clicked[0]?.result?.reason || '翻页失败');
+      const token = clicked[0].result.clickToken;
+      const dispatched = await chrome.scripting.executeScript({ target: { tabId: tabId, documentIds: [target.documentId] }, world: 'MAIN',
+        func: function (token) {
+          const button = document.querySelector('[data-dati-next-token="' + token + '"]');
+          if (!button || button.disabled || !button.isConnected) return { ok: false, reason: '翻页按钮已变化' };
+          button.removeAttribute('data-dati-next-token');
+          let error = '';
+          function capture(event) { error = String(event.message || '页面点击处理异常'); }
+          window.addEventListener('error', capture);
+          try { HTMLElement.prototype.click.call(button); }
+          catch (e) { error = String(e.message || e); }
+          finally { window.removeEventListener('error', capture); }
+          return { ok: !error, reason: error ? '页面处理下一题点击时出错：' + error : '' };
+        }, args: [token] });
+      if (!dispatched[0]?.result?.ok) return stop(run, dispatched[0]?.result?.reason || '无法触发页面翻页按钮');
       run.lastClicked = before;
       run.phase = 'waiting-page';
       const deadline = Date.now() + 15000;
@@ -88,5 +104,19 @@
     runs.clear();
   });
   chrome.tabs.onRemoved.addListener(function (tabId) { const run = runs.get(tabId); if (run) clearTimeout(run.timer); runs.delete(tabId); });
-  AD.AutoNavigation = { afterFill: afterFill };
+  AD.AutoNavigation = { afterFill: afterFill, status: async function (tabId) {
+    const run = runs.get(tabId);
+    if (!enabled()) return '自动翻页已关闭';
+    if (run && run.phase === 'stopped') return run.reason;
+    if (run && run.phase === 'waiting-page') return '已点击下一题，等待题目切换';
+    if (run && run.phase === 'scheduled') return '答案已填入，准备翻页';
+    try {
+      const frames = await inspect(tabId), questions = frames.flatMap(function (f) { return f.result.questions; });
+      if (!questions.length) return '未识别到可翻页的题目';
+      if (!frames.some(function (f) { return f.result.navigation.length; })) return '当前题目规则未配置翻页按钮';
+      if (!frames.some(function (f) { return f.result.hasNext; })) return '当前规则未匹配到下一页按钮';
+      if (questions.some(function (q) { return !q.answered; })) return '已找到下一页按钮，等待本页题目填入完成';
+      return '已找到下一页按钮，等待翻页调度';
+    } catch (e) { return '无法读取页面翻页状态，请刷新网页'; }
+  } };
 }(globalThis.AD = globalThis.AD || {}));
