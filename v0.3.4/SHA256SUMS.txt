@@ -1,0 +1,2 @@
+8457c034a9046fb62ee9bd03cedb0284587a96eadc1f8fbd72e87299b1c382da  auto-dati-v0.3.4.crx
+80fb94ff191b353b25e08f60ab06ea22e42cde3ee9fc76fe77cc80f2e960a601  auto-dati-v0.3.4.zip
