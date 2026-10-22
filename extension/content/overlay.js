@@ -306,6 +306,7 @@
   }
 
   function repositionAll() {
+    let ruleQuestions;
     if (hintEl && hintEl.classList.contains('is-show') && hintEl._datiTarget) {
       const target = hintEl._datiTarget;
       if (!target.isConnected || !visibleInScrollport(target) || contentChanged) Overlay.hideHint();
@@ -319,8 +320,19 @@
           return;
         }
         if (contentChanged && AD.Detector && AD.Detector.buildFromElement && AD.Detector.isVisible(target, { viewportOnly: false })) {
-          const fresh = AD.Detector.buildFromElement(target);
-          if ((!fresh && target.matches('.examPaper_subject')) ||
+          // 规则识别与通用推断可能取到不同题干（例如忽略必填标记的方式不同）。
+          // 规则创建的面板必须用同一规则重新识别，不能因另一种解析的 ID 不同而闪退。
+          const fromRule = String(s.question.presetId || '').startsWith('custom:');
+          let fresh;
+          if (fromRule) {
+            if (ruleQuestions === undefined) {
+              try { ruleQuestions = AD.Detector.scan(document, { viewportOnly: false, skipAnswered: false, maxPerPage: 0 }); }
+              catch (e) { ruleQuestions = null; }
+            }
+            if (ruleQuestions === null) return;
+            fresh = ruleQuestions.find(function (q) { return q.root === target && q.presetId === s.question.presetId; });
+          } else fresh = AD.Detector.buildFromElement(target);
+          if ((!fresh && (fromRule || target.matches('.examPaper_subject'))) ||
               (fresh && fresh.root === target && fresh.id !== s.question.id)) {
             Overlay.close(s.id, { reason: 'question-changed' });
             return;

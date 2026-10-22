@@ -63,14 +63,33 @@ try{
     q=(await summary())[0];ok('复杂选项选择器解析为四个不重复选项：'+selector,q?.count===4&&q.options[2].label==='C');
   }
   await settings.eval('AD.Settings.save({detect:{customRules:['+JSON.stringify({...native,rootSelector:'#math',optionSelector:'input[type=radio]'})+']}})');
+  await page.eval('document.querySelector("#math").insertAdjacentHTML("afterbegin","<p id=field-note>选项下方的额外说明不会包含在手动规则的题干中</p>")');
   ok('自动弹窗关闭时不产生面板',await ex('AD.Overlay.count()===0'));
   await settings.eval('AD.Settings.save({mode:{popup:true}})');
   await until(()=>ex('AD.Overlay.count()===1'),{label:'popup after enabling'});
   await until(()=>requests.length>0&&ex('Array.from(AD.App.state.inFlight).length===0'));
   ok('通过与快捷面板相同的设置开关开启后，自动显示完整四选项面板',await ex('document.querySelector("#dati-overlay-host").shadowRoot.querySelectorAll(".dati-question-option").length===4'));
+  // 覆盖 UI 文本更新；实际页面还有倒计时、入场动画和校验提示等持续变化。
+  await page.eval('document.querySelector("#field-note").textContent="页面更新了辅助说明"');
+  await sleep(400);
+  ok('辅助说明变化后，按手动规则创建的面板仍保留',await ex('AD.Overlay.count()===1'));
   ok('模型请求包含完整公式题干与所有选项',requests.some(r=>JSON.stringify(r.messages).includes('frac13')&&JSON.stringify(r.messages).includes('\\\\lim')));
   ok('面板可填入透明原生控件，选项 C 正确选中',await ex('(()=>{const q=AD.Detector.scan(document,{viewportOnly:false})[0];const r=AD.Filler.apply(q,"C");return r.ok&&document.querySelectorAll("#math input")[2].checked})()'));
   await sleep(800);ok('稳定页面不会重复请求或反复弹窗',requests.length===1&&await ex('AD.Overlay.count()===1'));
+  await settings.eval('AD.Settings.save({mode:{popup:false}})');
+  await page.eval('document.querySelector("#math").style.display="none"');
+  await until(()=>ex('document.querySelector("#dati-overlay-host").shadowRoot.querySelector(".dati-panel").classList.contains("is-suspended")'));
+  ok('题目临时隐藏时仅暂停显示，保留原答案会话',await ex('AD.Overlay.count()===1'));
+  await page.eval('document.querySelector("#math").style.display=""');
+  await until(()=>ex('!document.querySelector("#dati-overlay-host").shadowRoot.querySelector(".dati-panel").classList.contains("is-suspended")'));
+  ok('题目重新可见后恢复原面板，不重复请求',requests.length===1&&await ex('AD.Overlay.count()===1'));
+  await page.eval('document.querySelector("#math .stem").textContent="题块切换为新问题"');
+  await until(()=>ex('AD.Overlay.count()===0'));
+  ok('同一题块真实换题时仍关闭旧面板',true);
+  await ex('AD.Overlay.show({question:AD.Detector.scan(document,{viewportOnly:false})[0]});void 0');
+  await page.eval('document.querySelector("#math").remove()');
+  await until(()=>ex('AD.Overlay.count()===0'));
+  ok('题块真正从 DOM 删除时仍关闭面板',true);
   if(dumpPath){
     await settings.eval('AD.Settings.save({mode:{popup:false},detect:{customRules:['+JSON.stringify({...native,stemSelector:'.field-label-content'})+']}})');
     const dump=await open(url+'/dump');await dump.captureMainFrameId();const dx=s=>dump.evalInExtension(s,ID);await until(()=>dx('!!AD.App.state.settings'));
@@ -78,6 +97,9 @@ try{
     await dump.eval('document.querySelector("#upForm .field-wrapper").scrollIntoView({block:"center"})');
     await settings.eval('AD.Settings.save({mode:{popup:true}})');await until(()=>dx('AD.Overlay.count()===1'));
     ok('提供的真实 DOM 开启自动弹窗后可见且可交互',await dx('(()=>{const p=document.querySelector("#dati-overlay-host").shadowRoot.querySelector(".dati-panel");return p&&!p.inert&&!p.classList.contains("is-suspended")})()'));
+    await dump.eval('(()=>{const clock=document.createElement("span");clock.id="lifecycle-clock";clock.textContent="页面状态";document.body.append(clock)})()');
+    await sleep(600);
+    ok('真实 DOM 中无关页面变化不会因推断结果不同而闪退',await dx('AD.Overlay.count()===1'));
   }
 }finally{clients.forEach(c=>c.close());browser.kill();server.close();}
 console.log('\n复杂手动规则：'+count+' 通过');process.exit(0);
