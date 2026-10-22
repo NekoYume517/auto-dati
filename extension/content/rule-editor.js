@@ -43,7 +43,7 @@
     const style=document.createElement('style');style.textContent='.dati-panel{width:min(620px,calc(100vw - 24px));max-height:calc(100vh - 32px);right:16px;top:16px;padding:20px;pointer-events:auto}.dati-panel[hidden]{display:none!important}.dati-panel header{cursor:grab;touch-action:none;flex-shrink:0}.dati-panel main{overflow:auto;min-height:0}.dati-panel input,.dati-panel select,.dati-panel button{background:var(--dati-bg-elev);color:var(--dati-text);border-color:var(--dati-border)}.dati-panel p{color:var(--dati-text-dim)}.dati-panel .primary{background:var(--dati-accent);color:white}.dati-panel button[aria-current=true]{background:var(--dati-accent-soft);border-color:var(--dati-accent)}';shadow.append(style);
     function theme(settings){AD.Overlay.applyTheme(dialog,settings);}
     theme(AD.Settings.snapshot());const unsubscribe=AD.Settings.subscribe(theme);
-    function onKey(e){if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}}
+    function onKey(e){if(dialog.hidden)return;if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}}
     window.addEventListener('keydown',onKey,true);
     function clamp(){const r=dialog.getBoundingClientRect();if(dialog.style.left){dialog.style.left=Math.max(8,Math.min(innerWidth-r.width-8,r.left))+'px';dialog.style.top=Math.max(8,Math.min(innerHeight-r.height-8,r.top))+'px';}}
     window.addEventListener('resize',clamp);

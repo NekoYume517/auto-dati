@@ -37,6 +37,10 @@ try{
  for(const type of ['mousePressed','mouseReleased'])await page.send('Input.dispatchMouseEvent',{type,...r,button:'left',clickCount:1});
  await until(()=>ex('('+shadow+').querySelector("[data-rule-panel]").hidden===false'));
  ok('可通过元素拾取修改任意规则的下一页配置且不点击按钮',await ex('!!('+shadow+').querySelector("[data-field=nextPageSelector]").value'));
+ await ex('('+shadow+').querySelector("[data-field=rootSelector]").parentElement.querySelector("button").click()');
+ await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});
+ await until(()=>ex('!AD.Capture.isPicking() && !('+shadow+').querySelector("[data-rule-panel]").hidden'));
+ ok('Esc 取消拾取后恢复浮动编辑器，不遗留遮罩',true);
  await ex('('+shadow+').querySelector("[data-close]").click()');await sleep(300);
  ok('关闭编辑器清除匹配框',await ex('!Array.from(document.querySelectorAll("[data-dati-ignore]")).some(h=>h.shadowRoot?.querySelector("[data-rule-panel]"))'));
  await ex('AD.__display=AD.Overlay.show({question:AD.Detector.scan(document,{skipAnswered:false})[0]});AD.Overlay.done(AD.__display,{text:"B"});void 0');
