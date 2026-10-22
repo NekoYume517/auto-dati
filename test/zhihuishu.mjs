@@ -62,7 +62,7 @@ const S = {
   mode: { autoAnswer: false, popup: true, autoFillAfterStream: false, scanDebounceMs: 250, minIntervalMs: 250, maxPerPage: 20, skipAnswered: false, cooldownMs: 0, noticeToast: false, hoverHint: false },
   api: { activeId: 'e2e', profiles: [{ id: 'e2e', name: 'm', format: 'openai-chat', baseUrl: mockUrl, path: '', apiKey: 'k', model: 'glm-4-plus', temperature: 0.2, maxTokens: 512, stream: true, vision: true, reasoning: 'auto', extraHeaders: {}, extraBody: {}, timeoutMs: 15000, lastTest: null }] },
   prompt: { system: 'x', extraInstruction: '', kindHint: {}, language: 'zh', includeExplain: false, imageInstruction: 'x' },
-  detect: { sitePresets: { zhihuishu: true }, customRules: [], minTextLen: 4, viewportOnly: true, shadowDom: true },
+  detect: { ruleCatalogVersion:1, customRules: [{id:'site-zhihuishu',name:'智慧树',enabled:true,kind:'auto',rootSelector:'.examPaper_subject',stemSelector:'.subject_describe',optionSelector:'.nodeLab',domains:[]}], minTextLen: 4, viewportOnly: true, shadowDom: true },
   hotkey: { enabled: true, capture: 'Alt+Q', hover: 'Alt+Shift+Q', picker: 'Alt+Shift+E', toggleAuto: 'Alt+Shift+Z', togglePopup: 'Alt+Shift+X' },
   ui: { theme: 'dark', accent: '#6366f1', panelWidth: 384, fontSize: 13, radius: 14, blur: true, animate: true, panelPosition: 'auto' },
   advanced: { log: true, areaPicker: true, maxImageSide: 1200, screenshotFormat: 'png', showScreenshotThumb: true }
@@ -89,7 +89,7 @@ const scan1 = await page.evalInExtension(`(function(){
 console.log('   ', JSON.stringify(scan1));
 ok('检测到智慧树题目', scan1.n >= 2, JSON.stringify(scan1.items));
 ok('题干非空（不再是 Question missing）', scan1.items.every((q) => (q.stem || '').length > 2), JSON.stringify(scan1.items.map((q) => q.stem)));
-ok('预设 id 是 zhihuishu（站点开关启用）', scan1.items.some((q) => q.preset === 'zhihuishu'), JSON.stringify(scan1.items.map((q) => q.preset)));
+ok('统一规则列表中的智慧树规则生效', scan1.items.some((q) => q.preset === 'custom:site-zhihuishu'), JSON.stringify(scan1.items.map((q) => q.preset)));
 ok('题型正确（单选/多选，不是全判断）', scan1.items.some((q) => q.kind === 'choice') && scan1.items.some((q) => q.kind === 'multi'), JSON.stringify(scan1.items.map((q) => q.kind)));
 ok('答题卡/剩余时间没被当成题', scan1.items.every((q) => !/剩余时间|完成率/.test(q.stem || '')), JSON.stringify(scan1.items.map((q) => q.stem)));
 
@@ -123,6 +123,7 @@ const domCheck = await page.evalInExtension(`(function(){
   return new Promise(function(resolve){
     chrome.storage.local.get('ad_settings', function(r){
       var s = r.ad_settings;
+      var originalRules = s.detect.customRules;
       s.detect.customRules = [rule];
       chrome.storage.local.set({ ad_settings: s }, function(){
         setTimeout(function(){
@@ -131,7 +132,7 @@ const domCheck = await page.evalInExtension(`(function(){
           // 恢复
           chrome.storage.local.get('ad_settings', function(r2){
             var s2 = r2.ad_settings;
-            s2.detect.customRules = [];
+            s2.detect.customRules = originalRules;
             chrome.storage.local.set({ ad_settings: s2 });
           });
           resolve({ before: before, hit: hit.length });

@@ -165,13 +165,13 @@
     }
 
     // 祖先隐藏（display:none 会让 rect 归零，这里再兜一层）
-    var node = el.parentElement;
+    var node = el.parentElement || el.getRootNode().host;
     var guard = 0;
     while (node && node.nodeType === 1 && guard++ < 30) {
       if (node.hidden) return false;
       var pst = styleOf(node);
       if (pst && (pst.display === 'none' || pst.visibility === 'hidden')) return false;
-      node = node.parentElement;
+      node = node.parentElement || node.getRootNode().host;
     }
 
     if (viewportOnly) return inViewport(rect);
@@ -321,6 +321,27 @@
     return false;
   }
 
+  // CSS 在各个 ShadowRoot 内分别求值；只搜索本题块，且支持选择器命中题块自身。
+  function ruleElements(root, selector) {
+    if (!root || !selector) return [];
+    var found = new Set(), scopes = [root], k = kit();
+    try { if (root.matches && root.matches(selector)) found.add(root); } catch (e) { return []; }
+    for (var n = 0; n < scopes.length; n++) {
+      k.all(scopes[n], selector).forEach(function (el) { found.add(el); });
+      var nodes = [scopes[n]].concat(k.all(scopes[n], '*'));
+      nodes.forEach(function (el) {
+        var shadow = k.shadowRootOf(el);
+        if (shadow && scopes.indexOf(shadow) < 0) scopes.push(shadow);
+      });
+    }
+    return Array.from(found);
+  }
+
+  function inRuleRoot(root, el) {
+    for (var node = el; node; node = node.parentElement || node.getRootNode().host) if (node === root) return true;
+    return false;
+  }
+
   function matchCustomRule(rule, scope, ctx) {
     var k = kit();
     if (!k || !rule || !rule.rootSelector) return [];
@@ -349,9 +370,11 @@
       var kind = rule.kind && rule.kind !== 'auto' ? rule.kind : '';
       var stem = '';
       if (rule.stemSelector) {
-        var stemEl = null;
-        try { stemEl = rootEl.querySelector(rule.stemSelector); } catch (e) { stemEl = null; }
-        if (stemEl) stem = k.stripStem(k.txt(stemEl));
+        var stemEls = ruleElements(rootEl, rule.stemSelector).filter(function (el) {
+          return isVisible(el, { viewportOnly: false });
+        });
+        stemEls = stemEls.filter(function (el) { return !stemEls.some(function (other) { return other !== el && inRuleRoot(other, el); }); });
+        if (stemEls.length) stem = k.stripStem(stemEls.map(function (el) { return k.txt(el); }).join(' '));
       }
 
       var options = [];
@@ -359,21 +382,67 @@
 
       if (rule.optionSelector) {
         var optEls = [];
-        try { optEls = k.all(rootEl, rule.optionSelector); } catch (e) { optEls = []; }
+        var optionMembers = new Set();
+        try { optEls = ruleElements(rootEl, rule.optionSelector); } catch (e) { optEls = []; }
+        var selectedOptions = new Set(optEls);
+        optEls = optEls.flatMap(function (el) {
+          var controls = ruleElements(el, 'input[type="radio"], input[type="checkbox"]');
+          if (controls.length > 1) return controls;
+          var roles = ruleElements(el, '[role="radio"],[role="checkbox"],[role="option"]');
+          return roles.length > 1 ? roles : [el];
+        });
         for (var j = 0; j < optEls.length; j++) {
           var el = optEls[j];
           if (!el || el.nodeType !== 1) continue;
-          if (!isVisible(el, { viewportOnly: false })) continue;
-          var parsed = k.stripOptionLabel(k.txt(el));
+          if ((stemEls || []).some(function (stemEl) { return inRuleRoot(stemEl, el); })) continue;
+          for (var parent = el.parentElement; parent && parent !== rootEl; parent = parent.parentElement) {
+            if (selectedOptions.has(parent) && ruleElements(parent, 'input[type="radio"],input[type="checkbox"],[role="radio"],[role="checkbox"],[role="option"]').length <= 1) el = parent;
+          }
           var input = null;
+          var linkedText = '';
           try {
             input = el.matches('input[type="radio"], input[type="checkbox"]')
               ? el
               : el.querySelector('input[type="radio"], input[type="checkbox"]');
           } catch (e2) { input = null; }
+          // 自绘选项通常将原生 radio/checkbox 缩成 1px 并设为透明。
+          // 保留真实 input 用于填入，使用同题内可见 label 读取文字和定位。
+          if (!input) {
+            var wrap = el.closest('label,[role="radio"],[role="checkbox"],[role="option"]');
+            if (wrap && inRuleRoot(rootEl, wrap)) {
+              var members = ruleElements(wrap, 'input[type="radio"],input[type="checkbox"]');
+              if (members.length <= 1) { el = wrap; input = members[0] || null; }
+            }
+          }
+          if (input && (el === input || !isVisible(el, { viewportOnly: false }))) {
+            var labels = Array.from(input.labels || []);
+            var visibleLabel = labels.find(function (label) {
+              return inRuleRoot(rootEl, label) && isVisible(label, { viewportOnly: false });
+            });
+            if (!visibleLabel) {
+              var tree = input.getRootNode();
+              var refs = String(input.getAttribute('aria-labelledby') || '').split(/\s+/).map(function (id) {
+                return id && tree.getElementById ? tree.getElementById(id) : null;
+              }).filter(function (label) { return label && inRuleRoot(rootEl, label) && isVisible(label, { viewportOnly: false }); });
+              if (refs.length) { visibleLabel = refs[0]; linkedText = refs.map(function (label) { return k.txt(label); }).join(' '); }
+            }
+            if (!visibleLabel && !isVisible(input, { viewportOnly: false })) {
+              for (var wrapNode = input.parentElement; wrapNode && wrapNode !== rootEl; wrapNode = wrapNode.parentElement) {
+                if (ruleElements(wrapNode, 'input[type="radio"],input[type="checkbox"]').length !== 1) break;
+                if (isVisible(wrapNode, { viewportOnly: false }) && k.txt(wrapNode)) { visibleLabel = wrapNode; break; }
+              }
+            }
+            if (visibleLabel) el = visibleLabel;
+          }
+          if (!isVisible(el, { viewportOnly: false })) continue;
+          var member = input || el;
+          if (optionMembers.has(member)) continue;
+          optionMembers.add(member);
+          var optionText = linkedText || k.txt(el) || el.getAttribute('aria-label') || (input && input.value !== 'on' ? input.value : '');
+          var parsed = k.stripOptionLabel(optionText);
           options.push({
             label: parsed.label || k.letterFromIndex(options.length),
-            text: parsed.text || k.txt(el),
+            text: parsed.text || optionText,
             el: el,
             input: input || null,
             checked: input ? !!input.checked : k.isMarkedSelected(el)
@@ -383,14 +452,21 @@
 
       if (rule.inputSelector) {
         var inEls = [];
-        try { inEls = k.all(rootEl, rule.inputSelector); } catch (e) { inEls = []; }
+        try { inEls = ruleElements(rootEl, rule.inputSelector); } catch (e) { inEls = []; }
+        inEls = Array.from(new Set(inEls.flatMap(function (el) {
+          return ruleElements(el, 'input,textarea,select,[contenteditable="true"],[contenteditable=""],[contenteditable="plaintext-only"]');
+        })));
         for (var n = 0; n < inEls.length; n++) {
           var ie = inEls[n];
           if (!ie || ie.nodeType !== 1) continue;
-          if (!isVisible(ie, { viewportOnly: false }) || ie.disabled || ie.readOnly) continue;
+          if (ie.disabled || ie.readOnly) continue;
           var tag = ie.tagName;
           if ((tag === 'INPUT' && !k.isTextField(ie)) ||
               (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT' && !ie.isContentEditable)) continue;
+          var fieldVisible = isVisible(ie, { viewportOnly: false }) || Array.from(ie.labels || []).some(function (label) {
+            return inRuleRoot(rootEl, label) && isVisible(label, { viewportOnly: false });
+          });
+          if (!fieldVisible) continue;
           var type = 'text';
           if (tag === 'TEXTAREA') type = 'textarea';
           else if (tag === 'SELECT') type = 'select';
@@ -409,7 +485,7 @@
       if (!kind) {
         if (options.length) {
           if (k.isJudgePair(options)) kind = 'judge';
-          else if (options.some(function (o) { return o.input && o.input.type === 'checkbox'; })) kind = 'multi';
+          else if (options.some(function (o) { return (o.input && o.input.type === 'checkbox') || o.el.getAttribute('role') === 'checkbox'; })) kind = 'multi';
           else if (/(multi|多选)/i.test(k.classStr(rootEl))) kind = 'multi';
           else kind = 'choice';
         } else if (inputs.some(function (x) { return x.type === 'textarea' || x.type === 'contenteditable'; })) {

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AutoDati · 自动答题助手",
   "short_name": "AutoDati",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "homepage_url": "https://github.com/NekoYume517/auto-dati",
   "description": "检测页面上的选择题 / 填空题 / 大题，自动答题或弹窗流式作答；支持区域截图答题与自定义 LLM API。",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwHnflW5vE+/yWxygml4DzxQPU3NCdHRcplbEeLFlUdDpwRiwEVUSck5zpZF8aeN/wvWTKBgnFP8s9iwPniZbLRu4Y9N/CQqn2O8RKgRxuqyW/VyuxtlGAUx7p5NtXsXq7gFW86bykGBv7Q6iD62UgfcmqgsNtLEMzCNAnCM7Ghvmo0VcgYrak+9rSWs+PGDamfAmvhxPoeM25Go1r30QkEc6hxMg9+mln8PNGlfWcWqewBfc1nnHG5herRbuPT0kvFGeagynfnrBocFugbNlDKu+8giAqnDZdEuqvkC+oyg/fTkPUJAClqhuPC/mEpSA4FFxy+Ow8KBHCCFuI39ELQIDAQAB",

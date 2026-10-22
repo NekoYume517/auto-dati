@@ -84,6 +84,9 @@
     } catch (e) {
       s = el.textContent || '';
     }
+    // innerText 会应用 CSS text-transform，可能把 \\frac / \\lim 甚至变量大小写改坏。
+    // 公式使用原始文本节点读取，保留 LaTeX 的大小写与反斜线。
+    if (/\\[([]|\\(?:frac|lim|sum|int|begin)\b|\$\$/.test(el.textContent || '')) s = composedText(el);
     // 智慧树的题干组件使用 mode:closed，innerText/textContent 均读不到。
     // 使用浏览器提供给扩展的 DOM API，不改写宿主页的 attachShadow。
     var roots = [el].concat(all(el, '*'));
@@ -1176,7 +1179,8 @@
     var doc = el.ownerDocument || document;
     try {
       if (el.id) {
-        var lab = doc.querySelector('label[for="' + String(el.id).replace(/"/g, '\\"') + '"]');
+        // 原生 labels 支持数学公式等包含反斜线、引号的 ID，避免拼接 CSS 选择器。
+        var lab = el.labels && el.labels[0];
         if (lab) {
           var t = txt(lab);
           if (t) return stripStem(t);
