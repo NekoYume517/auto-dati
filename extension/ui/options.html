@@ -357,19 +357,10 @@
 <h3 class="dati-card__title">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path><path d="m15 9 3 3-3 3"></path></svg>
           规则列表
-          <span class="dati-card__aside"><button class="dati-btn dati-btn--sm" id="btnExportRules" type="button">导出编码</button> <button class="dati-btn dati-btn--sm" id="btnToggleRuleImport" type="button">粘贴导入</button> <button class="dati-btn dati-btn--primary dati-btn--sm" id="btnAddRule" type="button">新增规则</button></span>
+          <span class="dati-card__aside"><button class="dati-btn dati-btn--sm" id="btnExportRules" type="button">导出全部</button> <button class="dati-btn dati-btn--sm" id="btnToggleRuleImport" type="button">粘贴导入</button> <button class="dati-btn dati-btn--primary dati-btn--sm" id="btnAddRule" type="button">新增规则</button></span>
 </h3>
 <div class="rule-list" id="ruleList"></div>
-<div class="dati-field is-hidden" id="ruleTransfer">
-<label class="dati-label" for="ruleTransferText">规则编码（Base64）</label>
-<textarea class="dati-textarea dati-textarea--mono" id="ruleTransferText" placeholder="粘贴 AutoDati 导出的 Base64 编码，或点击「导出编码」生成" rows="4" spellcheck="false"></textarea>
-<div class="row-actions">
-<span class="dati-hint" id="ruleTransferStatus">导入会合并规则；已存在的规则 ID 会跳过。</span>
-<span class="spacer"></span>
-<button class="dati-btn dati-btn--sm" id="btnCopyRules" type="button">复制编码</button>
-<button class="dati-btn dati-btn--primary dati-btn--sm" id="btnApplyRules" type="button">导入规则</button>
-</div>
-</div>
+
 </div>
 </section><section aria-labelledby="settings-tab-advanced" class="view" data-view="advanced" id="settings-panel-advanced" role="tabpanel"><header class="view-head"><h1>高级</h1><p>识别兼容、扫描频率和调试选项。通常保持默认即可。</p></header><details class="settings-details dati-card"><summary>高级识别与扫描</summary><div class="settings-details__body"><div class="dati-card">
 <h3 class="dati-card__title">
@@ -502,10 +493,10 @@
 </div></div></details><div class="form-grid">
 <div class="dati-field"><label class="dati-label" for="nextPageDelayMs">填入后等待</label><div class="input-unit"><input class="dati-input" data-path="mode.nextPageDelayMs" id="nextPageDelayMs" max="10000" min="300" step="100" type="number"/><span class="input-unit__suffix">ms</span></div><span class="dati-hint">等待答案写入后再翻页；翻页后等待新题稳定，再继续识别。</span></div>
 </div></div>
-</section><section aria-labelledby="settings-tab-feedback" class="view" data-view="feedback" id="settings-panel-feedback" role="tabpanel"><header class="view-head"><h1>弹窗设置</h1><p>统一设置页面里的题目提示、位置框与点击反馈。</p></header><div class="dati-card"><h3 class="dati-card__title">弹窗布局</h3><div class="switch-list"><div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">显示题目</span><span class="switch-row__desc">控制答题弹窗中的题干显示。</span></div><label class="dati-switch"><input type="checkbox" data-path="ui.showQuestion"></label></div><div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">显示选项</span><span class="switch-row__desc">控制答题弹窗中的选项列表显示。</span></div><label class="dati-switch"><input type="checkbox" data-path="ui.showOptions"></label></div><div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">显示答案</span><span class="switch-row__desc">答案始终显示，不可关闭。</span></div><label class="dati-switch"><input type="checkbox" id="showAnswerAlways" checked disabled aria-label="答案始终显示"></label></div></div><div class="slider-field">
+</section><section aria-labelledby="settings-tab-feedback" class="view" data-view="feedback" id="settings-panel-feedback" role="tabpanel"><header class="view-head"><h1>弹窗设置</h1><p>统一设置页面里的题目提示、位置框与点击反馈。</p></header><div class="dati-card"><h3 class="dati-card__title">弹窗布局</h3><div class="switch-list"><div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">显示题目</span><span class="switch-row__desc">控制答题弹窗中的题干显示。</span></div><label class="dati-switch"><input data-path="ui.showQuestion" type="checkbox"/></label></div><div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">显示选项</span><span class="switch-row__desc">控制答题弹窗中的选项列表显示。</span></div><label class="dati-switch"><input data-path="ui.showOptions" type="checkbox"/></label></div><div class="switch-row"><div class="switch-row__main"><span class="switch-row__name">显示答案</span><span class="switch-row__desc">答案始终显示，不可关闭。</span></div><label class="dati-switch"><input aria-label="答案始终显示" checked="" disabled="" id="showAnswerAlways" type="checkbox"/></label></div></div><div class="slider-field">
 <label class="dati-label" for="uiPanelWidth">面板宽度 <output class="field-value" id="uiPanelWidthOut">384 px</output></label>
-<input id="uiPanelWidth" max="560" min="280" step="4" type="range" value="384"/>
-</div><div class="dati-field">
+<input id="uiPanelWidth" max="560" min="280" step="4" type="range" value="384">
+</input></div><div class="dati-field">
 <label class="dati-label" for="uiPanelPosition">面板定位</label>
 <select class="dati-select" data-path="ui.panelPosition" id="uiPanelPosition">
 <option value="auto">右侧停靠 · 跟随题目滚动</option>
@@ -911,7 +902,7 @@
 <script src="../common/statistics.js"></script>
 <script src="../vendor/echarts.min.js"></script>
 <script src="statistics.js"></script>
-<script src="options.js"></script>
+<script src="../common/rule-transfer.js"></script><script src="options.js"></script>
 <script src="updates.js"></script>
 </body>
 </html>

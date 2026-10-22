@@ -1075,6 +1075,7 @@
             (r.nextPageSelector ? '<span class="rule-item__sel">翻页' + (r.nextPageEnabled === false ? '（已停用）' : '') + '：' + esc(r.nextPageSelector) + '</span>' : '') +
           '</div>' +
           '<div class="rule-item__actions">' +
+            '<button class="dati-btn dati-btn--sm" type="button" data-rule-act="export" data-rule-index="' + i + '">导出</button>' +
             '<button class="dati-btn dati-btn--sm" type="button" data-rule-act="edit" data-rule-index="' + i + '">编辑</button>' +
             '<button class="dati-btn dati-btn--sm dati-btn--danger dati-btn--icon" type="button" data-rule-act="del" data-rule-index="' + i + '" title="删除规则">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6.5 7l.8 12a2 2 0 0 0 2 1.9h5.4a2 2 0 0 0 2-1.9l.8-12"/></svg>' +
@@ -1169,6 +1170,7 @@
         var idx = Number(actBtn.getAttribute('data-rule-index'));
         var act = actBtn.getAttribute('data-rule-act');
         var rules = clone((state.detect && state.detect.customRules) || []);
+        if (act === 'export') { AD.RuleTransfer.open({mode:'export',rules:[rules[idx]]}); return; }
         if (act === 'edit') { openRuleEditor(idx); return; }
         if (act === 'del') {
           var removed = rules[idx];
@@ -1192,109 +1194,9 @@
       });
     }
 
-    var transfer = $('#ruleTransfer');
-    var transferText = $('#ruleTransferText');
-    var transferStatus = $('#ruleTransferStatus');
-    var exportBtn = $('#btnExportRules');
-    var toggleImportBtn = $('#btnToggleRuleImport');
-    var copyBtn = $('#btnCopyRules');
-    var applyBtn = $('#btnApplyRules');
-    if (toggleImportBtn && transfer) toggleImportBtn.addEventListener('click', function () {
-      transfer.classList.toggle('is-hidden');
-      if (!transfer.classList.contains('is-hidden')) transferText.focus();
-    });
-    if (exportBtn && transfer && transferText) exportBtn.addEventListener('click', function () {
-      var payload = { format: 'autodati-custom-site-rules', version: 1, rules: clone((state.detect && state.detect.customRules) || []) };
-      var bytes = new TextEncoder().encode(JSON.stringify(payload));
-      var binary = '';
-      for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-      transferText.value = btoa(binary);
-      transfer.classList.remove('is-hidden');
-      transferText.focus();
-      transferText.select();
-      if (transferStatus) transferStatus.textContent = '已生成 ' + payload.rules.length + ' 条自定义规则编码，可复制或直接点「复制编码」。';
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(transferText.value).then(function () {
-          if (transferStatus) transferStatus.textContent = '编码已生成并复制到剪贴板。';
-        }).catch(function () { /* 仍保留在文本框供手动复制 */ });
-      }
-    });
-    if (copyBtn && transferText) copyBtn.addEventListener('click', function () {
-      if (!transferText.value.trim()) {
-        if (transferStatus) transferStatus.textContent = '先点「导出编码」生成当前规则。';
-        return;
-      }
-      transferText.focus();
-      transferText.select();
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(transferText.value).then(function () {
-          if (transferStatus) transferStatus.textContent = '编码已复制。';
-        }).catch(function () { document.execCommand('copy'); });
-      } else {
-        document.execCommand('copy');
-        if (transferStatus) transferStatus.textContent = '编码已复制。';
-      }
-    });
-    if (applyBtn && transferText) applyBtn.addEventListener('click', function () {
-      var encoded = transferText.value.replace(/\s+/g, '');
-      if (!encoded) { if (transferStatus) transferStatus.textContent = '请先粘贴 Base64 编码。'; return; }
-      if (encoded.length > 2800000) { if (transferStatus) transferStatus.textContent = '编码过长，无法导入。'; return; }
-      var incoming;
-      try {
-        var binary = atob(encoded);
-        var bytes = new Uint8Array(binary.length);
-        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-        incoming = JSON.parse(new TextDecoder().decode(bytes));
-      } catch (e) {
-        if (transferStatus) transferStatus.textContent = '编码无效或内容不是合法 JSON。';
-        return;
-      }
-      if (!incoming || incoming.format !== 'autodati-custom-site-rules' || incoming.version !== 1 || !Array.isArray(incoming.rules)) {
-        if (transferStatus) transferStatus.textContent = '编码格式不受支持，需使用 AutoDati 自定义站点规则编码。';
-        return;
-      }
-      var validKinds = ['auto', 'choice', 'multi', 'judge', 'blank', 'qa', 'generic'];
-      var cleaned = [];
-      for (var j = 0; j < incoming.rules.length; j++) {
-        var r = incoming.rules[j];
-        if (!r || typeof r !== 'object' || typeof r.rootSelector !== 'string' || !r.rootSelector.trim() || r.rootSelector.length > 500 || validKinds.indexOf(r.kind) < 0) {
-          if (transferStatus) transferStatus.textContent = '第 ' + (j + 1) + ' 条规则缺少有效题块选择器或题型，未导入。';
-          return;
-        }
-        var domains = r.domains;
-        if (Array.isArray(domains)) domains = domains.slice(0, 100).map(function (d) { return String(d).slice(0, 300); });
-        else if (typeof domains === 'string') domains = domains.slice(0, 2000);
-        else domains = '';
-        cleaned.push({
-          id: typeof r.id === 'string' && r.id.length < 120 ? r.id : ('r_' + Date.now().toString(36) + j),
-          name: String(r.name || '导入规则 ' + (j + 1)).slice(0, 120),
-          kind: r.kind,
-          rootSelector: r.rootSelector.trim(),
-          stemSelector: typeof r.stemSelector === 'string' ? r.stemSelector.slice(0, 500) : '',
-          optionSelector: typeof r.optionSelector === 'string' ? r.optionSelector.slice(0, 500) : '',
-          inputSelector: typeof r.inputSelector === 'string' ? r.inputSelector.slice(0, 500) : '',
-          nextPageSelector: typeof r.nextPageSelector === 'string' ? r.nextPageSelector.slice(0, 500) : '',
-          nextPageEnabled: r.nextPageEnabled !== false,
-          domains: domains,
-          enabled: r.enabled !== false
-        });
-      }
-      var merged = clone((state.detect && state.detect.customRules) || []);
-      var ids = new Set(merged.map(function (r) { return r && r.id; }).filter(Boolean));
-      var added = 0;
-      cleaned.forEach(function (rule) {
-        if (ids.has(rule.id)) return;
-        ids.add(rule.id);
-        merged.push(rule);
-        added++;
-      });
-      save({ detect: { customRules: merged } }).then(function () {
-        renderRules();
-        reflectDerived();
-        if (transferStatus) transferStatus.textContent = '导入完成：新增 ' + added + ' 条，跳过重复 ' + (cleaned.length - added) + ' 条。';
-        toast('自定义站点规则已合并导入', 'ok');
-      });
-    });
+    $('#btnExportRules').addEventListener('click',function(){AD.RuleTransfer.open({mode:'export',rules:clone(state.detect.customRules)});});
+    $('#btnToggleRuleImport').addEventListener('click',function(){AD.RuleTransfer.open({mode:'import',onImported:function(saved){state=saved;renderRules();reflectDerived();}});});
+
   }
 
   /* ------------------------------------------------------------ 快捷键录制 */

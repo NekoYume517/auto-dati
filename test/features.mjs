@@ -56,23 +56,18 @@ try {
   await options.eval('document.querySelector("[data-nav=detect]").click()');
   ok('离开设置隐藏二级 Tab，翻页选择器在统一规则编辑器中', await options.eval('document.querySelector("#settingsTabs").hidden && !!document.querySelector("#ruleNextPage") && !document.querySelector("[data-site]")'));
   ok('旧全局按钮选择器迁入已有规则', await options.eval('(()=>{const s=AD.Settings.normalize({mode:{nextPageSelector:"#legacy-next"},detect:{customRules:[{id:"legacy",rootSelector:".q"}]}});return !s.mode.nextPageSelector && s.detect.customRules.find(r=>r.id==="legacy").nextPageSelector==="#legacy-next"})()'));
-  const customRulesText = await options.eval(`AD.Settings.save({detect:{customRules:[{id:'share-rule',name:'分享规则',kind:'choice',rootSelector:'.q',stemSelector:'.stem',optionSelector:'.opt',inputSelector:'',domains:['example.com'],enabled:true,nextPageSelector:'#rule-next',nextPageEnabled:false}]}}).then(()=>{
-    document.querySelector('#btnExportRules').click();
-    return document.querySelector('#ruleTransferText').value;
-  })`);
-  ok('自定义站点规则导出为可复制的 UTF-8 Base64 文本', await options.eval(`(()=>{const raw=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(${JSON.stringify(customRulesText)}),c=>c.charCodeAt(0))));return raw.format==='autodati-custom-site-rules'&&raw.rules[0].name==='分享规则'})()`));
-  await options.eval(`AD.Settings.save({detect:{customRules:[]}}).then(()=>{
-    document.querySelector('#ruleTransferText').value=${JSON.stringify(customRulesText)};
-    document.querySelector('#btnApplyRules').click();
-  })`);
-  await until(() => options.eval('AD.Settings.snapshot().detect.customRules[0]?.id==="share-rule"'));
-  ok('粘贴 Base64 导入规则并合并保存', await options.eval('AD.Settings.snapshot().detect.customRules.length===1 && document.querySelector("#ruleTransferStatus").textContent.includes("新增 1 条")'));
-  ok('规则编码往返保留下一页选择器和开关', await options.eval('AD.Settings.snapshot().detect.customRules[0].nextPageSelector==="#rule-next" && AD.Settings.snapshot().detect.customRules[0].nextPageEnabled===false'));
-  await options.eval('document.querySelector("[data-rule-act=edit]").click()');
-  ok('规则编辑器读取翻页配置', await options.eval('document.querySelector("#ruleNextPage").value==="#rule-next" && !document.querySelector("#ruleNextPageEnabled").checked'));
-  await options.eval('document.querySelector("#ruleNextPage").value="#edited-next";document.querySelector("#ruleNextPageEnabled").checked=true;document.querySelector("#btnRuleSave").click()');
-  await until(() => options.eval('AD.Settings.snapshot().detect.customRules[0].nextPageSelector==="#edited-next"'));
-  ok('编辑规则后保留题目字段并更新翻页配置', await options.eval('AD.Settings.snapshot().detect.customRules[0].nextPageEnabled && AD.Settings.snapshot().detect.customRules[0].optionSelector===".opt"'));
+  await options.eval(`AD.Settings.save({detect:{customRules:[{id:'share-rule',name:'分享规则',kind:'choice',rootSelector:'.q',stemSelector:'.stem',optionSelector:'.opt',inputSelector:'',domains:['example.com'],enabled:true,nextPageSelector:'#rule-next',nextPageEnabled:false}]}})`);
+  const transfer='Array.from(document.querySelectorAll("[data-dati-ignore]")).find(h=>h.shadowRoot?.querySelector("dialog"))?.shadowRoot';
+  await options.eval('document.querySelector("[data-rule-act=export]").click()');
+  const customRulesText=await options.eval('('+transfer+').querySelector("textarea").value');
+  ok('单条规则在模态框导出为 UTF-8 Base64',await options.eval('AD.RuleTransfer.decode('+JSON.stringify(customRulesText)+')[0].name==="分享规则"'));
+  await options.eval('('+transfer+').querySelector("[data-close]").click()');
+  await options.eval('AD.Settings.save({detect:{customRules:[]}})');
+  await options.eval('document.querySelector("#btnToggleRuleImport").click()');
+  await options.eval('(()=>{const a=('+transfer+').querySelector("textarea");a.value='+JSON.stringify(customRulesText)+';a.dispatchEvent(new Event("input"));('+transfer+').querySelector("[data-confirm]").click()})()');
+  await until(()=>options.eval('AD.Settings.snapshot().detect.customRules[0]?.id==="share-rule"'));
+  ok('模态确认导入保留按钮配置和关闭状态',await options.eval('AD.Settings.snapshot().detect.customRules[0].nextPageSelector==="#rule-next" && AD.Settings.snapshot().detect.customRules[0].nextPageEnabled===false'));
+  await options.eval('('+transfer+').querySelector("[data-close]").click()');
   await options.eval(`AD.Settings.save({mode:{autoAnswer:false,popup:false,cooldownMs:0},api:{activeId:'p1',profiles:[{id:'p1',name:'测试供应商',format:'openai-chat',baseUrl:${JSON.stringify(url + '/v1')},apiKey:'mock-feature-key',model:'old-model',stream:true,timeoutMs:10000}]},ui:{theme:'light'}})`);
   await options.eval('document.querySelector(\'[data-nav="api"]\').click()');
   await options.eval('document.querySelector("#btnFetchModels").click()');

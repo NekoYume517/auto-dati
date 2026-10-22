@@ -490,7 +490,7 @@ importScripts(
             chrome.scripting.executeScript({
               target: { tabId: tab.id, allFrames: false },
               files: [
-                'common/protocol.js', 'common/settings.js',
+                'common/protocol.js', 'common/settings.js', 'common/rule-transfer.js',
                 'content/presets.js', 'content/detector.js', 'content/filler.js',
                 'content/overlay.js', 'content/frame.js', 'content/picker.js',
                 'content/capture.js', 'content/navigation.js', 'content/rule-editor.js', 'content/content.js'
