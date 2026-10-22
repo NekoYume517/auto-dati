@@ -31,3 +31,7 @@ node tools/build-release.mjs --init-key
 
 - https://developer.chrome.com/docs/extensions/how-to/distribute/
 - https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/hosting-and-updating
+
+## 仅使用 API 发布本机签名包
+
+也可不配置服务器签名 Secret：本机打包后，将四个公开发布文件通过 Git Data API 保存在 `release-assets` 分支，并在 main 提交 `release-assets/v版本.json`，记录每个文件的 Git blob SHA 与 SHA256。此路径变更会触发 Actions；工作流下载记录中的文件、校验 SHA256 与 CRX3 签名，再用 GitHub 自带的 GITHUB_TOKEN 调用 Release API 发布。v0.2.0 使用此方式，签名私钥始终保留在本机。后续版本必须使用同一私钥重新签名，不能复用旧版本记录。
